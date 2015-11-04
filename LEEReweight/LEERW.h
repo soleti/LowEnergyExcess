@@ -46,6 +46,8 @@ public:
 	/// Default destructor
 	~LEERW() {}
 
+	bool initialize();
+
 private:
 
 	TGraph* _flux_ratio;

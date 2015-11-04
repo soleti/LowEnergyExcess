@@ -26,4 +26,5 @@ include $(LARLITE_BASEDIR)/Makefile/Makefile.${OSNAME}
 # call the common GNUmakefile
 LDFLAGS += -L$(shell root-config --libdir)
 LDFLAGS += $(shell larlite-config --libs)
+LDFLAGS += -L$(LARLITE_LIBDIR) -lLowEnergyExcess_Utilities
 include $(LARLITE_BASEDIR)/Makefile/GNUmakefile.CORE

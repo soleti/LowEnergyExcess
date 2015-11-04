@@ -4,6 +4,7 @@
 #include "HistManip.h"
 
 namespace lee{
+  namespace util{
   
   bool HistManip::CheckBins(const TH1F * const hist, const std::vector<double> *nbins){
     
@@ -186,5 +187,6 @@ namespace lee{
       hist.SetBinError(i,0.);
     
   }   
+}
 }
 #endif

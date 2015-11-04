@@ -25,7 +25,7 @@
    Utility class to modify histograms (create THStacks, rebin histograms, etc)
 */
 namespace lee{
-
+  namespace util{
   ///This inherits from larlite_base only for the print() functionality....
   ///this could be fixed with minimal effort
   class HistManip : larlite::larlite_base {
@@ -72,6 +72,7 @@ namespace lee{
     void SetZeroErrors( TH1F & hist );
     
   };
+  }
 }
 
 #endif

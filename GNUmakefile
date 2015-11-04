@@ -20,7 +20,7 @@ endif
 #
 # Define directories to be compile upon a global "make"...
 #
-SUBDIRS := EventFilters Utilities #ADD_NEW_SUBDIR ... do not remove this comment from this line
+SUBDIRS := EventFilters Utilities LEEReweight ERAnalysis #ADD_NEW_SUBDIR ... do not remove this comment from this line
 
 #####################################################################################
 #

@@ -3,8 +3,8 @@
 #
 
 # specific names for this package
-DICT  = LowEnergyExcess_EventFiltersCint
-SHLIB = libLowEnergyExcess_EventFilters.so
+DICT  = LowEnergyExcess_ERAnalysisDict
+SHLIB = libLowEnergyExcess_ERAnalysis.so
 SOURCES = $(filter-out $(DICT).cxx, $(wildcard *.cxx))
 FMWK_HEADERS = LinkDef.h $(DICT).h
 HEADERS = $(filter-out $(FMWK_HEADERS), $(wildcard *.h))
@@ -12,7 +12,7 @@ OBJECTS = $(SOURCES:.cxx=.o)
 
 # include options for this package
 INCFLAGS  = -I.                       #Include itself
-INCFLAGS += $(shell larlite-config --includes) #larlite
+INCFLAGS += $(shell larlite-config --includes)
 INCFLAGS += $(shell seltool-config --includes)
 INCFLAGS += $(shell larliteapp-config --includes)
 
@@ -24,11 +24,11 @@ OSNAMEMODE      = $(OSNAME)
 # call kernel specific compiler setup
 include $(LARLITE_BASEDIR)/Makefile/Makefile.${OSNAME}
 
-# set linker flags
-LDFLAGS += -L$(shell root-config --libdir)
-LDFLAGS += $(shell larlite-config --libs)
-
 # call the common GNUmakefile
 LDFLAGS += $(shell larlite-config --libs)
 LDFLAGS += $(shell seltool-config --libs)
+LDFLAGS += -L$(LARLITE_LIBDIR) -lLArLiteApp_ERToolBackend
+LDFLAGS += -L$(LARLITE_LIBDIR) -lLArLiteApp_fluxRW
+
+
 include $(LARLITE_BASEDIR)/Makefile/GNUmakefile.CORE

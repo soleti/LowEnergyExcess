@@ -10,7 +10,7 @@ bool test_LEERW::initialize() {
 
     _rw.set_debug(false);
 
-    _rw.set_source_filename("source/LEE_Reweight_plots.root");
+    _rw.set_source_filename("$LARLITE_USERDEVDIR/LowEnergyExcess/LEEReweight/source/LEE_Reweight_plots.root");
 
     _rw.set_n_generated_events(6637);
 

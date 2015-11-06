@@ -21,7 +21,7 @@ else:
 	if _use_reco:
 		bnb_files += ' ' + input_base + 'osc_bnb_70kv_all_reco3d_fuzzyshower.root'
 		bnb_files += ' ' + input_base + 'osc_bnb_70kv_all_reco3d_kalmanhitcc.root'
-
+        lee_files = '/Users/davidkaleko/Data/larlite/LEE_generation/LEEgen_mcinfo_all.root'
 
 starttime = datetime.datetime.now()
 print "run_all_selections start time is",starttime
@@ -30,4 +30,5 @@ if dirt_files: os.system('python singleE_dirt_selection.py %s %s'%('reco' if _us
 if bnb_files: os.system('python singleE_nc_selection.py %s %s'%('reco' if _use_reco else 'mc',bnb_files))
 if bnb_files: os.system('python singleE_nue_selection.py %s %s'%('reco' if _use_reco else 'mc',bnb_files))
 if bnb_files: os.system('python singleE_numu_selection.py %s %s'%('reco' if _use_reco else 'mc',bnb_files))
+if lee_files: os.system('python singleE_LEE_selection.py %s %s'%('reco' if _use_reco else 'mc',lee_files))
 print "run_all_selections total time duration is",datetime.datetime.now()-starttime

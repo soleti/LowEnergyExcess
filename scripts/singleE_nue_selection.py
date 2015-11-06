@@ -38,7 +38,7 @@ for x in xrange(len(sys.argv)-2):
 my_proc.set_io_mode(fmwk.storage_manager.kREAD)
 
 # Specify output root file name
-my_proc.set_ana_output_file("output/70KV/%s/singleE_nue_selection_%s.root"%(('actual_reco' if use_reco else 'perfect_reco'),('reco' if use_reco else 'mc')))
+my_proc.set_ana_output_file("../output/70KV/%s/singleE_nue_selection_%s.root"%(('actual_reco' if use_reco else 'perfect_reco'),('reco' if use_reco else 'mc')))
 
 # Get Default CCSingleE Algorithm instance
 # this information is loaded from:
@@ -77,7 +77,7 @@ Ecut = 50 # in MeV
 #nueCC beam
 nuefilter = fmwk.MC_CCnue_Filter()
 
-nue_ana = ertool.ERAnaLowEExcess()
+nue_ana = ertool.ERAnaLowEnergyExcess()
 nue_ana.SetTreeName("beamNuE")
 #nue_ana.SetDebug(False)
 nue_ana.SetECut(Ecut)
@@ -113,7 +113,7 @@ nue_anaunit._mgr._mc_for_ana = True
 my_proc.add_process(nuefilter)
 my_proc.add_process(nue_anaunit)
 
-my_proc.run()
+my_proc.run(0,500)
 # my_proc.run(0,500)
 
 # done!

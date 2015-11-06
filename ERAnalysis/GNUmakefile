@@ -15,6 +15,10 @@ INCFLAGS  = -I.                       #Include itself
 INCFLAGS += $(shell larlite-config --includes)
 INCFLAGS += $(shell seltool-config --includes)
 INCFLAGS += $(shell larliteapp-config --includes)
+INCFLAGS += -I$(LARLITE_USERDEVDIR)/LowEnergyExcess/
+INCFLAGS += -I$(LARLITE_USERDEVDIR)/LowEnergyExcess/Utilities/
+INCFLAGS += -I$(LARLITE_USERDEVDIR)/LowEnergyExcess/LEEReweight/
+
 
 # platform-specific options
 OSNAME          = $(shell uname -s)
@@ -29,6 +33,7 @@ LDFLAGS += $(shell larlite-config --libs)
 LDFLAGS += $(shell seltool-config --libs)
 LDFLAGS += -L$(LARLITE_LIBDIR) -lLArLiteApp_ERToolBackend
 LDFLAGS += -L$(LARLITE_LIBDIR) -lLArLiteApp_fluxRW
-
+LDFLAGS += -L$(LARLITE_LIBDIR) -lLowEnergyExcess_Utilities
+LDFLAGS += -L$(LARLITE_LIBDIR) -lLowEnergyExcess_LEEReweight
 
 include $(LARLITE_BASEDIR)/Makefile/GNUmakefile.CORE

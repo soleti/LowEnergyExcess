@@ -1,9 +1,9 @@
 /**
- * \file ERAnaLowEExcess.h
+ * \file ERAnaLowEnergyExcess.h
  *
  * \ingroup LowEPlots
  * 
- * \brief Class def header for a class ERAnaLowEExcess
+ * \brief Class def header for a class ERAnaLowEnergyExcess
  *
  * @author jzennamo
  */
@@ -12,8 +12,8 @@
 
     @{*/
 
-#ifndef ERTOOL_ERANALOWEEXCESS_H
-#define ERTOOL_ERANALOWEEXCESS_H
+#ifndef ERTOOL_ERAnaLowEnergyExcess_H
+#define ERTOOL_ERAnaLowEnergyExcess_H
 
 #include "ERTool/Base/AnaBase.h"
 #include "TTree.h"
@@ -25,23 +25,25 @@
 #include "../../LArLiteApp/fluxRW/fluxRW.h"
 #include "GeoAlgo/GeoAABox.h"
 #include "LArUtil/Geometry.h"
+#include "LEERW.h"
+#include <cmath>
 
 
 namespace ertool {
 
   /**
-     \class ERAnaLowEExcess
+     \class ERAnaLowEnergyExcess
      User custom Analysis class made by kazuhiro
    */
-  class ERAnaLowEExcess : public AnaBase {
+  class ERAnaLowEnergyExcess : public AnaBase {
   
   public:
 
     /// Default constructor
-    ERAnaLowEExcess(const std::string& name="ERAnaLowEExcess");
+    ERAnaLowEnergyExcess(const std::string& name="ERAnaLowEnergyExcess");
 
     /// Default destructor
-    virtual ~ERAnaLowEExcess(){}
+    virtual ~ERAnaLowEnergyExcess(){}
 
     /// Reset function
     virtual void Reset() {}
@@ -66,6 +68,8 @@ namespace ertool {
 
     geoalgo::AABox TPC;
 
+    //Set this to true if you're running over LEE sample (so it uses LEE reweighting package)
+    void SetLEESampleMode(bool flag) { _LEESample_mode = flag; }
     
   private:
 
@@ -97,6 +101,14 @@ namespace ertool {
 
     // ertool_helper::ParticleID singleE_particleID;
     ertool::Shower singleE_shower;
+
+    bool _LEESample_mode = false;
+
+protected:
+
+  ::lee::LEERW _rw;
+
+
   };
 }
 #endif

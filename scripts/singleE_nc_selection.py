@@ -38,7 +38,7 @@ for x in xrange(len(sys.argv)-2):
 my_proc.set_io_mode(fmwk.storage_manager.kREAD)
 
 # Specify output root file name
-my_proc.set_ana_output_file("output/70KV/%s/singleE_nc_selection_%s.root"%(('actual_reco' if use_reco else 'perfect_reco'),('reco' if use_reco else 'mc')))
+my_proc.set_ana_output_file("../output/70KV/%s/singleE_nc_selection_%s.root"%(('actual_reco' if use_reco else 'perfect_reco'),('reco' if use_reco else 'mc')))
 
 
 # Get Default CCSingleE Algorithm instance
@@ -78,7 +78,7 @@ Ecut = 50 # in MeV
 #NC beam
 ncfilter = fmwk.MC_NC_Filter()
 
-nc_ana = ertool.ERAnaLowEExcess()
+nc_ana = ertool.ERAnaLowEnergyExcess()
 nc_ana.SetTreeName("beamNC")
 #nc_ana.SetDebug(False)
 nc_ana.SetECut(Ecut)

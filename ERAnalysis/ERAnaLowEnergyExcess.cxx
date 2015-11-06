@@ -1,11 +1,11 @@
-#ifndef ERTOOL_ERANALOWEEXCESS_CXX
-#define ERTOOL_ERANALOWEEXCESS_CXX
+#ifndef ERTOOL_ERANALOWENERGYEXCESS_CXX
+#define ERTOOL_ERANALOWENERGYEXCESS_CXX
 
-#include "ERAnaLowEExcess.h"
+#include "ERAnaLowEnergyExcess.h"
 
 namespace ertool {
 
-ERAnaLowEExcess::ERAnaLowEExcess(const std::string& name)
+ERAnaLowEnergyExcess::ERAnaLowEnergyExcess(const std::string& name)
 	: AnaBase(name)
 	, _result_tree(nullptr)
 {
@@ -23,12 +23,20 @@ ERAnaLowEExcess::ERAnaLowEExcess(const std::string& name)
 	// set default energy cut (for counting) to 0
 	_eCut = 0;
 
+	_rw.set_debug(false);
+
+	_rw.set_source_filename("/Users/davidkaleko/larlite/UserDev/LowEnergyExcess/LEEReweight/source/LEE_Reweight_plots.root");
+
+	_rw.set_n_generated_events(6637);
+
+	_rw.initialize();
 
 }
 
 
-bool ERAnaLowEExcess::Analyze(const EventData &data, const ParticleGraph &graph)
+bool ERAnaLowEnergyExcess::Analyze(const EventData &data, const ParticleGraph &graph)
 {
+
 	_result_tree->SetName(Form("%s", _treename.c_str()));
 
 	// Reset tree variables
@@ -57,6 +65,7 @@ bool ERAnaLowEExcess::Analyze(const EventData &data, const ParticleGraph &graph)
 	// Loop over particles and find the nue
 	for ( auto const & p : particles ) {
 		if ( abs(p.PdgCode()) == 12 ) {
+
 			// Save the neutrino vertex to the ana tree
 			_x_vtx = p.Vertex().at(0);
 			_y_vtx = p.Vertex().at(1);
@@ -114,10 +123,18 @@ bool ERAnaLowEExcess::Analyze(const EventData &data, const ParticleGraph &graph)
 		}// if we found the neutrino
 	}// End loop over particles
 
-
 	// Get MC particle set
 	auto const& mc_graph = MCParticleGraph();
+
+	double nu_E_GEV = 1.;
+	double e_E_MEV = -1.;
+	double e_uz = -2.;
+
+	if (!mc_graph.GetParticleArray().size())
+		std::cout << "WARNING: Size of mc particle graph is zero! Perhaps you forgot to include mctruth/mctrack/mcshower?" << std::endl;
+
 	for ( auto const & mc : mc_graph.GetParticleArray() ) {
+
 		// Find the shower particle in the mcparticlegraph that matches the object CCSingleE identified
 		// as the single electron (note, the mcparticlegraph object could be a gamma, for example)
 		// To do this, grab the ertool Shower in event_data associated with each mcparticlegraph
@@ -140,52 +157,67 @@ bool ERAnaLowEExcess::Analyze(const EventData &data, const ParticleGraph &graph)
 			}
 		}
 
+		if (!_LEESample_mode) {
+			/// This stuff takes the truth neutrino information and fills flux_reweight-relevant
+			/// branches in the ttree (used later on to weight events in final stacked histograms)
+			if (abs(mc.PdgCode()) == 12 || abs(mc.PdgCode()) == 14 ) {
 
-		/// This stuff takes the truth neutrino information and fills flux_reweight-relevant
-		/// branches in the ttree (used later on to weight events in final stacked histograms)
-		if (abs(mc.PdgCode()) == 12 || abs(mc.PdgCode()) == 14 ) {
+				int ntype = 0;
+				int ptype = 0;
+				double E = mc.Energy() / 1e3;
 
-			int ntype = 0;
-			int ptype = 0;
-			double E = mc.Energy() / 1e3;
+				//	std::cout << E << std::endl;
 
-			//	std::cout << E << std::endl;
+				if (mc.PdgCode() == 12)       ntype = 1;
+				else if (mc.PdgCode() == -12) ntype = 2;
+				else if (mc.PdgCode() ==  14) ntype = 3;
+				else if (mc.PdgCode() == -14) ntype = 4;
 
-			if (mc.PdgCode() == 12)       ntype = 1;
-			else if (mc.PdgCode() == -12) ntype = 2;
-			else if (mc.PdgCode() ==  14) ntype = 3;
-			else if (mc.PdgCode() == -14) ntype = 4;
+				if (mc.ProcessType() == ::ertool::kK0L) ptype = 3;
+				else if (mc.ProcessType() == ::ertool::kKCharged) ptype = 4;
+				else if (mc.ProcessType() == ::ertool::kMuDecay) ptype = 1;
+				else if (mc.ProcessType() == ::ertool::kPionDecay) ptype = 2;
 
-			if (mc.ProcessType() == ::ertool::kK0L) ptype = 3;
-			else if (mc.ProcessType() == ::ertool::kKCharged) ptype = 4;
-			else if (mc.ProcessType() == ::ertool::kMuDecay) ptype = 1;
-			else if (mc.ProcessType() == ::ertool::kPionDecay) ptype = 2;
+				if (mc.ProcessType() != ::ertool::kK0L &&
+				        mc.ProcessType() != ::ertool::kKCharged &&
+				        mc.ProcessType() != ::ertool::kMuDecay &&
+				        mc.ProcessType() != ::ertool::kPionDecay) {
 
-			if (mc.ProcessType() != ::ertool::kK0L &&
-			        mc.ProcessType() != ::ertool::kKCharged &&
-			        mc.ProcessType() != ::ertool::kMuDecay &&
-			        mc.ProcessType() != ::ertool::kPionDecay) {
+					std::cout << " PDG : " << mc.PdgCode() << " Process Type : " << mc.ProcessType() << " from " <<
+					          ::ertool::kK0L <<  " or " <<
+					          ::ertool::kKCharged << " or " <<
+					          ::ertool::kMuDecay << " or " <<
+					          ::ertool::kPionDecay << std::endl;
+				}
 
-				std::cout << " PDG : " << mc.PdgCode() << " Process Type : " << mc.ProcessType() << " from " <<
-				          ::ertool::kK0L <<  " or " <<
-				          ::ertool::kKCharged << " or " <<
-				          ::ertool::kMuDecay << " or " <<
-				          ::ertool::kPionDecay << std::endl;
+				_weight = _fluxRW.get_weight(E, ntype, ptype);
+
+				break;
+
 			}
-
-			_weight = _fluxRW.get_weight(E, ntype, ptype);
-
-			break;
-
 		}
-	}
+		else {
+			if (abs(mc.PdgCode()) == 12)
+				nu_E_GEV = mc.Energy() / 1000.;
+			if (abs(mc.PdgCode()) == 11) {
+				e_E_MEV = mc.Energy();
+				e_uz = std::cos(mc.Momentum().Theta());
+			}
+		}
+	} // end loop over mc particle graph
 
+	if (_LEESample_mode) {
+		if (e_E_MEV < 0 || e_uz < -1 || nu_E_GEV < 0)
+			std::cout << "wtf i don't understand" << std::endl;
+		_weight = _rw.get_sculpting_weight(e_E_MEV, e_uz, nu_E_GEV) * _rw.get_normalized_weight(e_E_MEV, e_uz, nu_E_GEV);
+
+	}
 	_result_tree->Fill();
 
 	return true;
 }
 
-void ERAnaLowEExcess::ProcessEnd(TFile* fout)
+void ERAnaLowEnergyExcess::ProcessEnd(TFile* fout)
 {
 
 	if (fout) {
@@ -197,7 +229,7 @@ void ERAnaLowEExcess::ProcessEnd(TFile* fout)
 
 }
 
-void ERAnaLowEExcess::PrepareTreeVariables() {
+void ERAnaLowEnergyExcess::PrepareTreeVariables() {
 
 	if (_result_tree) { delete _result_tree; }
 
@@ -218,7 +250,7 @@ void ERAnaLowEExcess::PrepareTreeVariables() {
 	return;
 }
 
-void ERAnaLowEExcess::ResetTreeVariables() {
+void ERAnaLowEnergyExcess::ResetTreeVariables() {
 
 	_numEvts = 0;
 	_is_fiducial = false;

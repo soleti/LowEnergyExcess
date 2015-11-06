@@ -113,7 +113,7 @@ nue_anaunit._mgr._mc_for_ana = True
 my_proc.add_process(nuefilter)
 my_proc.add_process(nue_anaunit)
 
-my_proc.run(0,500)
+my_proc.run()
 # my_proc.run(0,500)
 
 # done!

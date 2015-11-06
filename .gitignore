@@ -22,3 +22,4 @@
 *.pyc
 \#*\#
 *.ipynb_checkpoints
+*.ipynb

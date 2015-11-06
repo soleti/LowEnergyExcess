@@ -48,11 +48,11 @@ double LEERW::get_sculpting_weight(const ::larlite::mctruth* mytruth) {
 
 	if (_debug) print_evt_info(evt_info);
 
-	return get_sculpting_weight(evt_info.electron_energy_MEV, evt_info.electron_uz, evt_info.nue_energy_GEV);
+	return get_sculpting_weight(evt_info.electron_energy_MEV, evt_info.electron_uz);
 
 }
 
-double LEERW::get_sculpting_weight(double electron_energy_MEV, double electron_uz, double neutrino_energy_GEV) {
+double LEERW::get_sculpting_weight(double electron_energy_MEV, double electron_uz) {
 
 	//Check to make sure LEERW instance is fully initialized
 	check_is_initialized();
@@ -72,7 +72,7 @@ double LEERW::get_sculpting_weight(double electron_energy_MEV, double electron_u
 			std::cout << "WARNING: Can't find any entry in generated 2d hist with electron energy = "
 			          << electron_energy_MEV
 			          << " and uz = "
-			          << electron_uz 
+			          << electron_uz
 			          << ". Returning 0 weight!" << std::endl;
 		return 0.;
 	}
@@ -101,12 +101,12 @@ double LEERW::get_normalized_weight(const ::larlite::mctruth* mytruth) {
 
 	if (_debug) print_evt_info(evt_info);
 
-	return get_normalized_weight(evt_info.electron_energy_MEV, evt_info.electron_uz, evt_info.nue_energy_GEV);
+	return get_normalized_weight(evt_info.nue_energy_GEV);
 
 
 }
 
-double LEERW::get_normalized_weight(double electron_energy_MEV, double electron_uz, double nue_energy_GEV) {
+double LEERW::get_normalized_weight(double nue_energy_GEV) {
 
 	//Check to make sure LEERW instance is fully initialized
 	check_is_initialized();
@@ -200,11 +200,12 @@ void LEERW::check_is_initialized() {
 
 void LEERW::print_evt_info(const EventInfo_t evt_info) {
 
-	std::cout << "DUMPING EVENT INFO" << std::endl;
-	std::cout << "Is there a nue? " << evt_info.is_there_a_neutrino << ". Number of electrons? " << evt_info.n_electrons << std::endl;
+	std::cout << " -- DUMPING EVENT INFO -- " << std::endl;
+	std::cout << "Is there a nue? " << evt_info.is_there_a_neutrino << std::endl;
+	std::cout << "Number of electrons? " << evt_info.n_electrons << std::endl;
 	std::cout << "Neutrino info: Energy = " << evt_info.nue_energy_GEV * 1000. << std::endl;
 	std::cout << "Electron info: Energy = " << evt_info.electron_energy_MEV << ", Uz = " << evt_info.electron_uz << std::endl;
-
+	std::cout << " -- END EVENT INFO DUMP -- " << std::endl;
 }
 }
 #endif

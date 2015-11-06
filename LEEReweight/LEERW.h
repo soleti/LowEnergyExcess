@@ -78,8 +78,8 @@ public:
 	//to see in MicroBooNE after 6.6 POT running. The user can just use this weight for each event and everything will be fine.
 	double get_normalized_weight(const ::larlite::mctruth* mytruth);
 
-	double get_sculpting_weight(double electron_energy_MEV, double electron_uz, double neutrino_energy_GEV);
-	double get_normalized_weight(double electron_energy_MEV, double electron_uz, double neutrino_energy_GEV);
+	double get_sculpting_weight(double electron_energy_MEV, double electron_uz);
+	double get_normalized_weight(double neutrino_energy_GEV);
 
 	void set_source_filename(std::string filename) { _source_filename = filename; }
 

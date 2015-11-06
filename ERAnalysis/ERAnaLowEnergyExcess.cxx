@@ -209,7 +209,9 @@ bool ERAnaLowEnergyExcess::Analyze(const EventData &data, const ParticleGraph &g
 	if (_LEESample_mode) {
 		if (e_E_MEV < 0 || e_uz < -1 || nu_E_GEV < 0)
 			std::cout << "wtf i don't understand" << std::endl;
-		_weight = _rw.get_sculpting_weight(e_E_MEV, e_uz, nu_E_GEV) * _rw.get_normalized_weight(e_E_MEV, e_uz, nu_E_GEV);
+		_weight = _rw.get_sculpting_weight(e_E_MEV, e_uz) * _rw.get_normalized_weight(nu_E_GEV);
+		//temp debug
+		_weight *= 2.716;
 
 	}
 	_result_tree->Fill();

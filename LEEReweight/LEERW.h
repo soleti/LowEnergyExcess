@@ -91,6 +91,15 @@ public:
 	/// public for hacky reasons right now
 	const EventInfo_t extract_event_info(const ::larlite::mctruth* mytruth);
 
+	//microboone tonnage (total) in grams
+	//from 1.3954 [g/cm^3] * pi * 190^2 * 1079 [cm^3]
+	double UB_TONNAGE_GRAMS = 170756353.192;
+
+	//miniboone tonnage (total) in grams
+	//from 0.855 [g/cm^3] * (4/3) * pi * 610.6^3 [cm^3]
+	double MINIBOONE_TONNAGE_GRAMS = 815313732.1;
+
+
 private:
 
 	//Check if the LEERW package is properly initialized
@@ -103,14 +112,6 @@ private:
 	TGraph* _xsec_ratio;
 	TH2D*   _MB_evis_uz_corr;
 	TH2D*   _generated_evis_uz_corr;
-
-	//microboone tonnage (total) in grams
-	//from 1.3954 [g/cm^3] * pi * 190^2 * 1079 [cm^3]
-	double UB_TONNAGE_GRAMS = 170756353.192;
-
-	//miniboone tonnage (total) in grams
-	//from 0.855 [g/cm^3] * (4/3) * pi * 610.6^3 [cm^3]
-	double MINIBOONE_TONNAGE_GRAMS = 815313732.1;
 
 	/// Number of generated nue events (for absolute normalization)
 	double _n_generated_evts = 0;

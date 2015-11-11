@@ -66,7 +66,7 @@ namespace ertool {
     /// set the energy cut to be used when counting particles
     void SetECut(double c) { _eCut = c; }
 
-    geoalgo::AABox TPC;
+    // geoalgo::AABox TPC;
 
     //Set this to true if you're running over LEE sample (so it uses LEE reweighting package)
     void SetLEESampleMode(bool flag) { _LEESample_mode = flag; }

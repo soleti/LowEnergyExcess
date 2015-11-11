@@ -12,13 +12,13 @@ ERAnaLowEnergyExcess::ERAnaLowEnergyExcess(const std::string& name)
 
 	PrepareTreeVariables();
 
-	TPC.Min(0 + 10,
-	        -(::larutil::Geometry::GetME()->DetHalfHeight()) + 10,
-	        0 + 10);
+	// TPC.Min(0 + 10,
+	//         -(::larutil::Geometry::GetME()->DetHalfHeight()) + 10,
+	//         0 + 10);
 
-	TPC.Max(2 * (::larutil::Geometry::GetME()->DetHalfWidth()) - 10,
-	        ::larutil::Geometry::GetME()->DetHalfHeight() - 10,
-	        ::larutil::Geometry::GetME()->DetLength() - 10);
+	// TPC.Max(2 * (::larutil::Geometry::GetME()->DetHalfWidth()) - 10,
+	//         ::larutil::Geometry::GetME()->DetHalfHeight() - 10,
+	//         ::larutil::Geometry::GetME()->DetLength() - 10);
 
 	// set default energy cut (for counting) to 0
 	_eCut = 0;
@@ -71,10 +71,10 @@ bool ERAnaLowEnergyExcess::Analyze(const EventData &data, const ParticleGraph &g
 			_y_vtx = p.Vertex().at(1);
 			_z_vtx = p.Vertex().at(2);
 
-			// Save whether the neutrino verted was inside of fiducial volume
-			if (!(TPC.Contain(p.Vertex())))
-				_is_fiducial = false;
-			else _is_fiducial = true;
+			// // Save whether the neutrino verted was inside of fiducial volume
+			// if (!(TPC.Contain(p.Vertex())))
+			// 	_is_fiducial = false;
+			// else _is_fiducial = true;
 
 			// get all descendants of the neutrino in order to calculate total energy deposited
 			_e_dep = 0;

@@ -22,14 +22,12 @@ ERAnaLowEnergyExcess::ERAnaLowEnergyExcess(const std::string& name)
 
 	// set default energy cut (for counting) to 0
 	_eCut = 0;
-
-	_rw.set_debug(false);
-
-	_rw.set_source_filename("/Users/davidkaleko/larlite/UserDev/LowEnergyExcess/LEEReweight/source/LEE_Reweight_plots.root");
-
-	_rw.set_n_generated_events(6637);
-
-	_rw.initialize();
+	if (_LEESample_mode) {
+		_rw.set_debug(false);
+		_rw.set_source_filename("/Users/davidkaleko/larlite/UserDev/LowEnergyExcess/LEEReweight/source/LEE_Reweight_plots.root");
+		_rw.set_n_generated_events(6637);
+		_rw.initialize();
+	}
 
 }
 

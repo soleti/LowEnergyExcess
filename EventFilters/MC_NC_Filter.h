@@ -2,7 +2,7 @@
  * \file MC_NC_Filter.h
  *
  * \ingroup LowEPlots
- * 
+ *
  * \brief Class def header for a class MC_NC_Filter
  *
  * @author jzennamo
@@ -22,54 +22,56 @@
 #include "LArUtil/Geometry.h"
 
 namespace larlite {
-  /**
-     \class MC_NC_Filter
-     User custom analysis class made by SHELL_USER_NAME
-   */
-  class MC_NC_Filter : public ana_base{
-  
-  public:
+/**
+   \class MC_NC_Filter
+   User custom analysis class made by SHELL_USER_NAME
+ */
+class MC_NC_Filter : public ana_base {
 
-    /// Default constructor
-    MC_NC_Filter(){ _name="MC_NC_Filter"; _fout=0;}
+public:
 
-    /// Default destructor
-    virtual ~MC_NC_Filter(){}
+  /// Default constructor
+  MC_NC_Filter() { _name = "MC_NC_Filter"; _fout = 0;}
 
-    /** IMPLEMENT in MC_NC_Filter.cc!
-        Initialization method to be called before the analysis event loop.
-    */ 
-    virtual bool initialize();
+  /// Default destructor
+  virtual ~MC_NC_Filter() {}
 
-    /** IMPLEMENT in MC_NC_Filter.cc! 
-        Analyze a data event-by-event  
-    */
-    virtual bool analyze(storage_manager* storage);
+  /** IMPLEMENT in MC_NC_Filter.cc!
+      Initialization method to be called before the analysis event loop.
+  */
+  virtual bool initialize();
 
-    /** IMPLEMENT in MC_NC_Filter.cc! 
-        Finalize method to be called after all events processed.
-    */
-    virtual bool finalize();
+  /** IMPLEMENT in MC_NC_Filter.cc!
+      Analyze a data event-by-event
+  */
+  virtual bool analyze(storage_manager* storage);
 
-    void flip(bool on) { _flip = on; }
+  /** IMPLEMENT in MC_NC_Filter.cc!
+      Finalize method to be called after all events processed.
+  */
+  virtual bool finalize();
 
-    geoalgo::AABox TPC;
+  void flip(bool on) { _flip = on; }
 
-  protected:
+  geoalgo::AABox TPC;
 
-    // boolean to flip logical operation of algorithm
-    bool _flip;
-    
-  };
+protected:
+
+  // boolean to flip logical operation of algorithm
+  bool _flip;
+
+  size_t _n_total_events;
+  size_t _n_kept_events;
+};
 }
 #endif
 
 //**************************************************************************
-// 
+//
 // For Analysis framework documentation, read Manual.pdf here:
 //
 // http://microboone-docdb.fnal.gov:8080/cgi-bin/ShowDocument?docid=3183
 //
 //**************************************************************************
 
-/** @} */ // end of doxygen group 
+/** @} */ // end of doxygen group

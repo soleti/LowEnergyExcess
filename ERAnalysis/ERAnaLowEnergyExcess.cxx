@@ -146,6 +146,7 @@ bool ERAnaLowEnergyExcess::Analyze(const EventData &data, const ParticleGraph &g
 				auto parent = mc_graph.GetParticle(mc.Parent());
 				_parentPDG = parent.PdgCode();
 				_mcPDG = mc.PdgCode();
+				_mcGeneration = mc.Generation();
 
 				// if (abs(_parentPDG) == 11) {
 				// 	std::cout << "Energy of particle tagged is " << mc_ertoolshower._energy << std::endl;
@@ -241,6 +242,7 @@ void ERAnaLowEnergyExcess::PrepareTreeVariables() {
 	_result_tree->Branch("_weight", &_weight, "weight/D");
 	_result_tree->Branch("_parentPDG", &_parentPDG, "parent_PDG/I");
 	_result_tree->Branch("_mcPDG", &_mcPDG, "mc_PDG/I");
+	_result_tree->Branch("_mcGeneration",&_mcGeneration, "mc_Generation/I");
 	_result_tree->Branch("_longestTrackLen", &_longestTrackLen, "longest_tracklen/D");
 	_result_tree->Branch("_x_vtx", &_x_vtx, "x_vtx/D");
 	_result_tree->Branch("_y_vtx", &_y_vtx, "y_vtx/D");
@@ -258,6 +260,7 @@ void ERAnaLowEnergyExcess::ResetTreeVariables() {
 	_e_dep = 0;
 	_parentPDG = -99999;
 	_mcPDG = -99999;
+	_mcGeneration = -99999;
 	_longestTrackLen = 0;
 	_x_vtx = -999.;
 	_y_vtx = -999.;

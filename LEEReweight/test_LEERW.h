@@ -48,6 +48,8 @@ public:
 
   virtual bool finalize();
 
+  void set_debug(bool flag){ _debug = flag; }
+
 protected:
 
   ::lee::LEERW _rw;
@@ -60,6 +62,8 @@ protected:
   TH1F* reweighted_electron_spectrum;
   TH2D* initial_evis_uz_corr;
   TH2D* sculpted_evis_uz_corr;
+
+  bool _debug;
 
 };
 }

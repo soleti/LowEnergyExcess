@@ -8,7 +8,7 @@ namespace larlite {
 
 bool test_LEERW::initialize() {
 
-    _rw.set_debug(false);
+    _rw.set_debug(_debug);
 
     _rw.set_source_filename("$LARLITE_USERDEVDIR/LowEnergyExcess/LEEReweight/source/LEE_Reweight_plots.root");
 
@@ -52,8 +52,8 @@ bool test_LEERW::analyze(storage_manager* storage) {
     // std::cout << "(normalized) scaling weight is computed to be: " << normalized_weight << std::endl;
 
     sculpted_evis_uz_corr->Fill(hacky_evt_info.electron_energy_MEV, hacky_evt_info.electron_uz, sculpting_weight);
-    reweighted_nu_spectrum->Fill(true_nu_energy, sculpting_weight * normalized_weight);
-    reweighted_electron_spectrum->Fill(hacky_evt_info.electron_energy_MEV / 1000., sculpting_weight * normalized_weight);
+    reweighted_nu_spectrum->Fill(true_nu_energy, normalized_weight);// * sculpting_weight);
+    reweighted_electron_spectrum->Fill(hacky_evt_info.electron_energy_MEV / 1000., normalized_weight);// * sculpting_weight);
     return true;
 }
 

@@ -86,6 +86,7 @@ namespace ertool {
     bool _is_fiducial;
     int _parentPDG; /// true PDG of parent of the electron (only for running on MC)
     int _mcPDG; /// true PDG of "single electron" (probably 11 or 22)
+    int _mcGeneration; /// True generation of single electron (to characterize cosmics and other backgrounds)
     double _longestTrackLen; /// longest track associated with the reconstructed neutrino
     double _x_vtx; /// Neutrino vertex point
     double _y_vtx;

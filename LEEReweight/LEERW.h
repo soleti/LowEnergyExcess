@@ -48,10 +48,10 @@ struct EventInfo_t {
 	double electron_uz;
 	double nue_energy_GEV;
 	bool   is_there_a_neutrino;
-	size_t n_electrons = 0;
+  size_t n_electrons;// = 0;
 };
 
-class LEERW : public ::larlite::larlite_base {
+class LEERW : public larlite::larlite_base {
 
 public:
 
@@ -72,11 +72,11 @@ public:
 	//This weight sculpts the energy/angle spectrum of the neutrino interaction to match that of miniboone
 	//This weight (for now) is NOT NORMALIZED CORRECTLY. The user needs to do a separate event loop and sum up
 	//all of the sculpting weights of all events, then scale the resulting histogram by n_events_analyzed/summed_weight
-	double get_sculpting_weight(const ::larlite::mctruth* mytruth);
+	double get_sculpting_weight(const larlite::mctruth* mytruth);
 
 	//This weight is correctly normalized, and has to do with number of excess events (and some more sculpting) expected
 	//to see in MicroBooNE after 6.6 POT running. The user can just use this weight for each event and everything will be fine.
-	double get_normalized_weight(const ::larlite::mctruth* mytruth);
+	double get_normalized_weight(const larlite::mctruth* mytruth);
 
 	double get_sculpting_weight(double electron_energy_MEV, double electron_uz);
 	double get_normalized_weight(double neutrino_energy_GEV);
@@ -89,15 +89,15 @@ public:
 
 	/// Utility function to grab relevant stuff for reweighting from the mctruth object
 	/// public for hacky reasons right now
-	const EventInfo_t extract_event_info(const ::larlite::mctruth* mytruth);
+	const EventInfo_t extract_event_info(const larlite::mctruth* mytruth);
 
 	//microboone tonnage (total) in grams
 	//from 1.3954 [g/cm^3] * pi * 190^2 * 1079 [cm^3]
-	double UB_TONNAGE_GRAMS = 170756353.192;
+  double UB_TONNAGE_GRAMS;// = 170756353.192;
 
 	//miniboone tonnage (total) in grams
 	//from 0.855 [g/cm^3] * (4/3) * pi * 610.6^3 [cm^3]
-	double MINIBOONE_TONNAGE_GRAMS = 815313732.1;
+  double MINIBOONE_TONNAGE_GRAMS;// = 815313732.1;
 
 
 private:
@@ -118,14 +118,14 @@ private:
 
 	/// Name of input root file containing scaling flux ratio graphs, xsec ratio graphs, evis_uz_correlation histo
 	std::string _source_filename;
-	std::string _flux_ratio_name = "flux_ratio";
-	std::string _xsec_ratio_name = "xsec_ratio";
-	std::string _MB_evis_uz_corr_name = "hist_raw_uz_evis_smooth";
-	std::string _generated_evis_uz_corr_name = "initial_evis_uz_corr";
+  std::string _flux_ratio_name; //= "flux_ratio";
+  std::string _xsec_ratio_name;// = "xsec_ratio";
+  std::string _MB_evis_uz_corr_name;// = "hist_raw_uz_evis_smooth";
+  std::string _generated_evis_uz_corr_name = "initial_evis_uz_corr";
 
-	double _pot_weight = 6.6 / 6.46; //microboone POT over miniboone POT
-	double _tonnage_weight = UB_TONNAGE_GRAMS / MINIBOONE_TONNAGE_GRAMS; //roughly 0.2
-	double _true_MB_excess_evts = 1212.114;
+  double _pot_weight;// = 6.6 / 6.46; //microboone POT over miniboone POT
+  double _tonnage_weight;// = UB_TONNAGE_GRAMS / MINIBOONE_TONNAGE_GRAMS; //roughly 0.2
+  double _true_MB_excess_evts;// = 1212.114;
 
 	bool _debug = false;
 

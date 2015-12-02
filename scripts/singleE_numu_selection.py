@@ -2,7 +2,7 @@ import sys, os
 
 if len(sys.argv) < 2:
     msg  = '\n'
-    msg += "Usage 1: %s $INPUT_ROOT_FILE\n" % sys.argv[0]
+    msg += "Usage 1: %s $INPUT_ROOT_FILEs $OUTPUT_PATH\n" % sys.argv[0]
     msg += '\n'
     sys.stderr.write(msg)
     sys.exit(1)
@@ -31,14 +31,15 @@ my_proc.enable_filter(True)
 use_reco = True if sys.argv[1] == 'reco' else False
 
 # Set input root file
-for x in xrange(len(sys.argv)-2):
+for x in xrange(len(sys.argv)-3):
     my_proc.add_input_file(sys.argv[x+2])
 
 # Specify IO mode
 my_proc.set_io_mode(fmwk.storage_manager.kREAD)
 
 # Specify output root file name
-my_proc.set_ana_output_file("../output/70KV/%s/singleE_numu_selection_%s.root"%(('actual_reco' if use_reco else 'perfect_reco'),('reco' if use_reco else 'mc')))
+outfile = sys.argv[-1]+sys.argv[0][:-3]+'_%s'%('mc' if not use_reco else 'reco')+'.root'
+my_proc.set_ana_output_file(outfile)
 
 # Get Default CCSingleE Algorithm instance
 # this information is loaded from:
@@ -83,6 +84,7 @@ numu_ana.SetTreeName("beamNuMu")
 numu_ana.SetECut(Ecut)
 
 numu_anaunit = fmwk.ExampleERSelection()
+numu_anaunit.setDisableXShift(True)
 numu_anaunit._mgr.ClearCfgFile()
 numu_anaunit._mgr.AddCfgFile(os.environ['LARLITE_USERDEVDIR']+'/SelectionTool/ERTool/dat/ertool_default%s.cfg'%('_reco' if use_reco else ''))
 
@@ -92,6 +94,8 @@ if use_reco:
 else:
 	numu_anaunit.SetShowerProducer(True,'mcreco')
 	numu_anaunit.SetTrackProducer(True,'mcreco')
+	
+numu_anaunit._mgr.AddAlgo(ertool.ERAlgopi0())
 numu_anaunit._mgr.AddAlgo(cos_algo)
 numu_anaunit._mgr.AddAlgo(cosmicprimary_algo)
 numu_anaunit._mgr.AddAlgo(cosmicsecondary_algo)

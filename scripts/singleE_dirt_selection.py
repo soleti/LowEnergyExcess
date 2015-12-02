@@ -2,7 +2,7 @@ import sys, os
 
 if len(sys.argv) < 2:
     msg  = '\n'
-    msg += "Usage 1: %s $INPUT_ROOT_FILE\n" % sys.argv[0]
+    msg += "Usage 1: %s $INPUT_ROOT_FILEs $OUTPUT_PATH\n" % sys.argv[0]
     msg += '\n'
     sys.stderr.write(msg)
     sys.exit(1)
@@ -30,14 +30,15 @@ my_proc.enable_filter(True)
 use_reco = True if sys.argv[1] == 'reco' else False
 
 # Set input root file
-for x in xrange(len(sys.argv)-2):
+for x in xrange(len(sys.argv)-3):
     my_proc.add_input_file(sys.argv[x+2])
 
 # Specify IO mode
 my_proc.set_io_mode(fmwk.storage_manager.kREAD)
 
 # Specify output root file name
-my_proc.set_ana_output_file("../output/70KV/%s/singleE_dirt_selection_%s.root"%(('actual_reco' if use_reco else 'perfect_reco'),('reco' if use_reco else 'mc')))
+outfile = sys.argv[-1]+sys.argv[0][:-3]+'_%s'%('mc' if not use_reco else 'reco')+'.root'
+my_proc.set_ana_output_file(outfile)
 
 # Get Default CCSingleE Algorithm instance
 # this information is loaded from:
@@ -81,6 +82,7 @@ dirt_ana.SetTreeName("dirt")
 dirt_ana.SetECut(Ecut)
 
 dirt_anaunit = fmwk.ExampleERSelection()
+dirt_anaunit.setDisableXShift(True)
 dirt_anaunit._mgr.ClearCfgFile()
 dirt_anaunit._mgr.AddCfgFile('/uboone/app/users/kaleko/larlite/UserDev/SelectionTool/ERTool/dat/ertool_default%s.cfg'%('_reco' if use_reco else ''))
 
@@ -91,6 +93,7 @@ else:
     dirt_anaunit.SetShowerProducer(True,'mcreco')
     dirt_anaunit.SetTrackProducer(True,'mcreco')
 
+dirt_anaunit._mgr.AddAlgo(ertool.ERAlgopi0())
 dirt_anaunit._mgr.AddAlgo(cos_algo)
 dirt_anaunit._mgr.AddAlgo(cosmicprimary_algo)
 dirt_anaunit._mgr.AddAlgo(cosmicsecondary_algo)

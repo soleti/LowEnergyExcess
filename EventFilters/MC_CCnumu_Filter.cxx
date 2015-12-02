@@ -15,6 +15,9 @@ bool MC_CCnumu_Filter::initialize() {
           ::larutil::Geometry::GetME()->DetHalfHeight(),
           ::larutil::Geometry::GetME()->DetLength());
 
+  _n_total_events = 0;
+  _n_kept_events = 0;
+
   return true;
 }
 

@@ -28,10 +28,10 @@ else:
 
 starttime = datetime.datetime.now()
 print "run_all_selections start time is",starttime
-if cosmics_files: os.system('python singleE_cosmic_selection.py %s %s %s'%('reco' if _use_reco else 'mc',cosmics_files,output_dir))
-if dirt_files: os.system('python singleE_dirt_selection.py %s %s'%('reco' if _use_reco else 'mc',dirt_files))
-if bnb_files: os.system('python singleE_nc_selection.py %s %s'%('reco' if _use_reco else 'mc',bnb_files))
-if bnb_files: os.system('python singleE_nue_selection.py %s %s'%('reco' if _use_reco else 'mc',bnb_files))
-if bnb_files: os.system('python singleE_numu_selection.py %s %s'%('reco' if _use_reco else 'mc',bnb_files))
-# if lee_files: os.system('python singleE_LEE_selection.py %s %s'%('reco' if _use_reco else 'mc',lee_files))
+# if cosmics_files: os.system('python singleE_cosmic_selection.py %s %s %s'%('reco' if _use_reco else 'mc',cosmics_files,output_dir))
+if dirt_files: os.system('python singleE_dirt_selection.py %s %s %s'%('reco' if _use_reco else 'mc',dirt_files,output_dir))
+if bnb_files: os.system('python singleE_nc_selection.py %s %s %s'%('reco' if _use_reco else 'mc',bnb_files,output_dir))
+if bnb_files: os.system('python singleE_nue_selection.py %s %s %s'%('reco' if _use_reco else 'mc',bnb_files,output_dir))
+if bnb_files: os.system('python singleE_numu_selection.py %s %s %s'%('reco' if _use_reco else 'mc',bnb_files,output_dir))
+# if lee_files: os.system('python singleE_LEE_selection.py %s %s'%('reco' if _use_reco else 'mc',lee_files,output_dir))
 print "run_all_selections total time duration is",datetime.datetime.now()-starttime

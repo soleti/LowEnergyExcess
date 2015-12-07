@@ -27,6 +27,7 @@
 #include "LArUtil/Geometry.h"
 #include "LEERW.h"
 #include <cmath>
+ #include "GeoAlgo/GeoAlgo.h"
 
 
 namespace ertool {
@@ -72,6 +73,9 @@ namespace ertool {
     void SetLEESampleMode(bool flag) { _LEESample_mode = flag; }
     
   private:
+    
+    // Calc new E_nu^calo, with missing pT cut     
+    double EnuCaloMissingPt(const std::vector< ::ertool::NodeID_t >& Children, const ParticleGraph &graph);
 
     // Result tree comparison for reconstructed events
     TTree* _result_tree;
@@ -108,7 +112,7 @@ namespace ertool {
 protected:
 
   ::lee::LEERW _rw;
-
+  ::geoalgo::GeoAlgo _geoalg;
 
   };
 }

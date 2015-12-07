@@ -283,7 +283,7 @@ namespace ertool {
 		return;
 
 	}
-	
+
 	double ERAnaLowEnergyExcess::EnuCaloMissingPt(const std::vector< ::ertool::NodeID_t >& Children, const ParticleGraph &graph) {
 
 		double Enu = 0;          //MeV
@@ -318,8 +318,10 @@ namespace ertool {
 
 		mAr -= nP * mp + nN * mn + (nN + nP) * Emdefect;
 
+		// Enu = Elep + Ehad + Es +
+		//       sqrt(pow(pT, 2) + pow(mAr, 2)) - mAr;
 		Enu = Elep + Ehad + Es +
-		      sqrt(pow(pT, 2) + pow(mAr, 2)) - mAr;
+		      pow(pT, 2)/(2 * mAr);
 
 		return Enu;
 	}

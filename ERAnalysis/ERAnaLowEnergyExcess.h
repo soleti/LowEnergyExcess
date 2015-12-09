@@ -95,6 +95,8 @@ namespace ertool {
     double _x_vtx; /// Neutrino vertex point
     double _y_vtx;
     double _z_vtx;
+    double _e_theta;
+    double _e_phi;
 
 
     // prepare TTree with variables

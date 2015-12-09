@@ -105,7 +105,10 @@ namespace ertool {
 						// 	daught.Vertex(),
 						// 	daught.Momentum());
 						// std::cout<<"Made singleE_particleID with vertex "<<daught.Vertex()<<std::endl;
+
 						singleE_shower = data.Shower(daught.RecoID());
+						_e_theta = singleE_shower.Dir().Theta();
+						_e_phi = singleE_shower.Dir().Phi();
 					}
 
 					_e_nuReco += daught.KineticEnergy();
@@ -261,7 +264,8 @@ namespace ertool {
 		_result_tree->Branch("_x_vtx", &_x_vtx, "x_vtx/D");
 		_result_tree->Branch("_y_vtx", &_y_vtx, "y_vtx/D");
 		_result_tree->Branch("_z_vtx", &_z_vtx, "z_vtx/D");
-
+		_result_tree->Branch("_e_theta", &_e_theta, "_e_theta/D");
+		_result_tree->Branch("_e_phi", &_e_phi, "_e_phi/D");
 
 		return;
 	}
@@ -279,6 +283,8 @@ namespace ertool {
 		_x_vtx = -999.;
 		_y_vtx = -999.;
 		_z_vtx = -999.;
+		_e_theta = -999.;
+		_e_phi = -999.;
 
 		return;
 

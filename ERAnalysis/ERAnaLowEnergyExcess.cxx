@@ -69,6 +69,11 @@ namespace ertool {
 				_y_vtx = p.Vertex().at(1);
 				_z_vtx = p.Vertex().at(2);
 
+				// Save the neutrino direction and momentum information to the ana tree
+				_nu_theta = p.Momentum().Theta();
+				_nu_p = p.Momentum().Length();
+				_nu_pt = _nu_p * std::sin(_nu_theta);
+
 				// // Save whether the neutrino verted was inside of fiducial volume
 				// if (!(TPC.Contain(p.Vertex())))
 				// 	_is_fiducial = false;
@@ -266,7 +271,9 @@ namespace ertool {
 		_result_tree->Branch("_z_vtx", &_z_vtx, "z_vtx/D");
 		_result_tree->Branch("_e_theta", &_e_theta, "_e_theta/D");
 		_result_tree->Branch("_e_phi", &_e_phi, "_e_phi/D");
-
+		_result_tree->Branch("_nu_theta", &_nu_theta, "_nu_theta/D");
+		_result_tree->Branch("_nu_pt", &_nu_pt, "_nu_pt/D");
+		_result_tree->Branch("_nu_p", &_nu_p, "_nu_p/D");
 		return;
 	}
 
@@ -285,6 +292,9 @@ namespace ertool {
 		_z_vtx = -999.;
 		_e_theta = -999.;
 		_e_phi = -999.;
+		_nu_p = -999.;
+		_nu_pt = -999.;
+		_nu_theta = -999.;
 
 		return;
 
@@ -327,7 +337,7 @@ namespace ertool {
 		// Enu = Elep + Ehad + Es +
 		//       sqrt(pow(pT, 2) + pow(mAr, 2)) - mAr;
 		Enu = Elep + Ehad + Es +
-		      pow(pT, 2)/(2 * mAr);
+		      pow(pT, 2) / (2 * mAr);
 
 		return Enu;
 	}

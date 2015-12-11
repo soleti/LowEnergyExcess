@@ -83,20 +83,23 @@ namespace ertool {
 
     float _eCut;
 
-    double _e_nuReco;     /// Neutrino energy
-    double _e_dep;        /// Neutrino energy
+    double _e_nuReco;         /// Neutrino energy
+    double _e_dep;            /// Neutrino energy
     double _weight;
     int _numEvts;
     bool _is_fiducial;
-    int _parentPDG; /// true PDG of parent of the electron (only for running on MC)
-    int _mcPDG; /// true PDG of "single electron" (probably 11 or 22)
-    int _mcGeneration; /// True generation of single electron (to characterize cosmics and other backgrounds)
-    double _longestTrackLen; /// longest track associated with the reconstructed neutrino
-    double _x_vtx; /// Neutrino vertex point
+    int _parentPDG;           /// true PDG of parent of the electron (only for running on MC)
+    int _mcPDG;               /// true PDG of "single electron" (probably 11 or 22)
+    int _mcGeneration;        /// True generation of single electron (to characterize cosmics and other backgrounds)
+    double _longestTrackLen;  /// longest track associated with the reconstructed neutrino
+    double _x_vtx;            /// Neutrino vertex points (x,y,z separated)
     double _y_vtx;
     double _z_vtx;
-    double _e_theta;
-    double _e_phi;
+    double _e_theta;          /// Electron's angle w.r.t/ z- axis
+    double _e_phi;            /// Electron's phi angle
+    double _nu_p;             /// Neutrino reconstructed momentum magnitude
+    double _nu_pt;            /// Component of nu momentum that is transverse (_nu_p*sin(_nu_theta))
+    double _nu_theta;         /// Neutrino's reconstructed angle w.r.t. z- axis
 
 
     // prepare TTree with variables

@@ -77,6 +77,9 @@ namespace ertool {
     // Calc new E_nu^calo, with missing pT cut     
     double EnuCaloMissingPt(const std::vector< ::ertool::NodeID_t >& Children, const ParticleGraph &graph);
 
+    // Determine if the event is "simple" (1e, np, 0else)
+    bool isInteractionSimple(const Particle &singleE, const ParticleGraph &ps);
+
     // Result tree comparison for reconstructed events
     TTree* _result_tree;
     std::string _treename;
@@ -100,7 +103,8 @@ namespace ertool {
     double _nu_p;             /// Neutrino reconstructed momentum magnitude
     double _nu_pt;            /// Component of nu momentum that is transverse (_nu_p*sin(_nu_theta))
     double _nu_theta;         /// Neutrino's reconstructed angle w.r.t. z- axis
-
+    int _n_children;          /// Number of children associated with the neutrino interaction
+    bool _is_simple;          /// Whether the interaction is 1e+np+0else (reconstructed)
 
     // prepare TTree with variables
     void PrepareTreeVariables();

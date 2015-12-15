@@ -82,6 +82,7 @@ namespace ertool {
 				// get all descendants of the neutrino in order to calculate total energy deposited
 				_e_dep = 0;
 				auto const descendants = graph.GetAllDescendantNodes(p.ID());
+				_n_children = descendants.size();
 				for ( auto const & desc : descendants) {
 					auto const & part = graph.GetParticle(desc);
 					// does this particle have a reco ID?
@@ -114,6 +115,8 @@ namespace ertool {
 						singleE_shower = data.Shower(daught.RecoID());
 						_e_theta = singleE_shower.Dir().Theta();
 						_e_phi = singleE_shower.Dir().Phi();
+						_is_simple = isInteractionSimple(daught,graph);
+						std::cout<<"Is interaction simple? "<<_is_simple<<std::endl;
 					}
 
 					_e_nuReco += daught.KineticEnergy();
@@ -274,6 +277,9 @@ namespace ertool {
 		_result_tree->Branch("_nu_theta", &_nu_theta, "_nu_theta/D");
 		_result_tree->Branch("_nu_pt", &_nu_pt, "_nu_pt/D");
 		_result_tree->Branch("_nu_p", &_nu_p, "_nu_p/D");
+		_result_tree->Branch("_n_children", &_n_children, "_n_children/I");
+		_result_tree->Branch("_is_simple", &_is_simple, "_is_simple/O");
+
 		return;
 	}
 
@@ -295,6 +301,8 @@ namespace ertool {
 		_nu_p = -999.;
 		_nu_pt = -999.;
 		_nu_theta = -999.;
+		_n_children = -999;
+		_is_simple = false;
 
 		return;
 
@@ -340,6 +348,22 @@ namespace ertool {
 		      pow(pT, 2) / (2 * mAr);
 
 		return Enu;
+	}
+
+	bool ERAnaLowEnergyExcess::isInteractionSimple(const Particle &singleE, const ParticleGraph &ps) {
+
+		auto const &kids = ps.GetAllDescendantNodes(singleE.ID());
+		auto const &bros = ps.GetSiblingNodes(singleE.ID());
+
+		// Number of particles associated with this electron that are not protons, or the single e itself
+		size_t _n_else = 0;
+		for ( auto const& kid : kids )
+			if (ps.GetParticle(kid).PdgCode() != 2212) _n_else++;
+		for ( auto const& bro : bros )
+			if (ps.GetParticle(bro).PdgCode() != 2212) _n_else++;
+
+		return _n_else ? false : true;
+
 	}
 
 }

@@ -116,7 +116,6 @@ namespace ertool {
 						_e_theta = singleE_shower.Dir().Theta();
 						_e_phi = singleE_shower.Dir().Phi();
 						_is_simple = isInteractionSimple(daught,graph);
-						std::cout<<"Is interaction simple? "<<_is_simple<<std::endl;
 					}
 
 					_e_nuReco += daught.KineticEnergy();
@@ -161,18 +160,18 @@ namespace ertool {
 					_mcPDG = mc.PdgCode();
 					_mcGeneration = mc.Generation();
 
-					if (_mcPDG == 11 && _parentPDG == 13) {
-						std::cout << "found electron, parent muson. electron at " << singleE_shower.Start() << std::endl;
-						if (parent.RecoType() == RecoType_t::kInvisible)
-							std::cout << " parent muon is invisible! event ID "
-							          << data.Event_ID() << ", run " << data.Run() << ", subrun " << data.SubRun() << std::endl;
-						else
-							std::cout << "found electron with parent muon. distance between electron and muon end point is "
-							          << std::sqrt(
-							              singleE_shower.Start().SqDist(mc_data.Track(parent).back())
-							          )
-							          << std::endl;
-					}
+					// if (_mcPDG == 11 && _parentPDG == 13) {
+					// 	std::cout << "found electron, parent muson. electron at " << singleE_shower.Start() << std::endl;
+					// 	if (parent.RecoType() == RecoType_t::kInvisible)
+					// 		std::cout << " parent muon is invisible! event ID "
+					// 		          << data.Event_ID() << ", run " << data.Run() << ", subrun " << data.SubRun() << std::endl;
+					// 	else
+					// 		std::cout << "found electron with parent muon. distance between electron and muon end point is "
+					// 		          << std::sqrt(
+					// 		              singleE_shower.Start().SqDist(mc_data.Track(parent).back())
+					// 		          )
+					// 		          << std::endl;
+					// }
 					// if (abs(_parentPDG) == 11) {
 					// 	std::cout << "Energy of particle tagged is " << mc_ertoolshower._energy << std::endl;
 					// 	std::cout << "PDG of particle tagged is " << _mcPDG << std::endl;

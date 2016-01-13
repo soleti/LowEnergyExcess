@@ -11,6 +11,9 @@ from seltool.pi0algDef import GetERAlgoPi0Instance
 
 def GetERSelectionInstance():
 
+	# Make an instance of ERAlgoFlashMatch using defaults defined in ertool_default(_mc).cfg
+	flashmatch_algo = ertool.ERAlgoFlashMatch()
+
 	# Get Default CCSingleE Algorithm instance
 	# this information is loaded from:
 	# $LARLITE_BASEDIR/python/seltool/GetCCSingleEInstance
@@ -49,6 +52,7 @@ def GetERSelectionInstance():
 	anaunit = fmwk.ExampleERSelection()
 	anaunit.setDisableXShift(True)
 
+	anaunit._mgr.AddAlgo(flashmatch_algo)
 	anaunit._mgr.AddAlgo(pi0_algo)
 	anaunit._mgr.AddAlgo(cos_algo)
 	anaunit._mgr.AddAlgo(cosmicprimary_algo)

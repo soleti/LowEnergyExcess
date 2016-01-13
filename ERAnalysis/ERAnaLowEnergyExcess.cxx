@@ -116,6 +116,7 @@ namespace ertool {
 						_e_theta = singleE_shower.Dir().Theta();
 						_e_phi = singleE_shower.Dir().Phi();
 						_is_simple = isInteractionSimple(daught,graph);
+						_dedx = data.Shower(daught.RecoID())._dedx;
 					}
 
 					_e_nuReco += daught.KineticEnergy();
@@ -278,6 +279,7 @@ namespace ertool {
 		_result_tree->Branch("_nu_p", &_nu_p, "_nu_p/D");
 		_result_tree->Branch("_n_children", &_n_children, "_n_children/I");
 		_result_tree->Branch("_is_simple", &_is_simple, "_is_simple/O");
+		_result_tree->Branch("_dedx", &_dedx, "dedx/D");
 
 		return;
 	}
@@ -302,6 +304,7 @@ namespace ertool {
 		_nu_theta = -999.;
 		_n_children = -999;
 		_is_simple = false;
+		_dedx = -999.;
 
 		return;
 

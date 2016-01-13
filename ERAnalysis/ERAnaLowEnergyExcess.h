@@ -105,6 +105,7 @@ namespace ertool {
     double _nu_theta;         /// Neutrino's reconstructed angle w.r.t. z- axis
     int _n_children;          /// Number of children associated with the neutrino interaction
     bool _is_simple;          /// Whether the interaction is 1e+np+0else (reconstructed)
+    double _dedx;             /// dedx of "single electron" shower
 
     // prepare TTree with variables
     void PrepareTreeVariables();

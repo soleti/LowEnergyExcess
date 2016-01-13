@@ -62,6 +62,8 @@ else:
 	anaunit.SetShowerProducer(True,'mcreco')
 	anaunit.SetTrackProducer(True,'mcreco')
 
+anaunit.SetFlashProducer('opflash')
+
 anaunit._mgr.AddAna(LEEana)
 # Add MC filter and analysis unit
 # to the process to be run
@@ -70,7 +72,7 @@ my_proc.add_process(eventfilter)
 my_proc.add_process(anaunit)
 
 my_proc.run()
-# my_proc.run(0,500)
+#my_proc.run(0,500)
 
 # done!
 print

@@ -19,6 +19,7 @@ from ROOT import larlite as fmwk
 from ROOT import ertool
 from singleE_config import GetERSelectionInstance
 
+# gSystem.Load('libLowEnergyExcess_EventFilters.so')
 # Create ana_processor instance
 my_proc = fmwk.ana_processor()
 my_proc.enable_filter(True)
@@ -61,6 +62,8 @@ if use_reco:
 else:
 	anaunit.SetShowerProducer(True,'mcreco')
 	anaunit.SetTrackProducer(True,'mcreco')
+
+anaunit.SetFlashProducer('opflash')
 
 anaunit._mgr.AddAna(LEEana)
 # Add MC filter and analysis unit

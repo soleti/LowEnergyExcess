@@ -52,7 +52,9 @@ def GetERSelectionInstance():
 	anaunit = fmwk.ExampleERSelection()
 	anaunit.setDisableXShift(True)
 
-	anaunit._mgr.AddAlgo(flashmatch_algo)
+	# For now, flashmatch_algo is preventing neutrinos from being reconstructed
+	# Kaleko is debugging. Date: 011916
+	# anaunit._mgr.AddAlgo(flashmatch_algo)
 	anaunit._mgr.AddAlgo(pi0_algo)
 	anaunit._mgr.AddAlgo(cos_algo)
 	anaunit._mgr.AddAlgo(cosmicprimary_algo)

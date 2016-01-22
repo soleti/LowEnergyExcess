@@ -52,9 +52,7 @@ def GetERSelectionInstance():
 	anaunit = fmwk.ExampleERSelection()
 	anaunit.setDisableXShift(True)
 
-	# For now, flashmatch_algo is preventing neutrinos from being reconstructed
-	# Kaleko is debugging. Date: 011916
-	# anaunit._mgr.AddAlgo(flashmatch_algo)
+
 	anaunit._mgr.AddAlgo(pi0_algo)
 	anaunit._mgr.AddAlgo(cos_algo)
 	anaunit._mgr.AddAlgo(cosmicprimary_algo)
@@ -63,6 +61,17 @@ def GetERSelectionInstance():
 	anaunit._mgr.AddAlgo(primary_algo)
 	anaunit._mgr.AddAlgo(pid_algo)
 	anaunit._mgr.AddAlgo(ccsinglee_algo)
+	# anaunit._mgr.AddAlgo(ccsinglee_algo)
+	# Is this where flashmatch_algo should go?
+	# First we reconstruct nues and all that, then say if the electron's associated flash
+	# is outside of the BGW we throw it out?
+	# IE that's an analysis cut later by asking about flash_time?
+	# Or maybe it should go right before ccsinglee_algo?
+	# That way when it tags something as kcosmic, algosingleE auto-ignores it?
+	# However, right now all solo shower particles are tagged as cosmic by the flash-matcher
+	# Because it only works for tracks! For now, flashmatch_algo has to live after
+	# and it has to be an analysis cut. This will be changed ASAP.
+	# anaunit._mgr.AddAlgo(flashmatch_algo)
 	anaunit._mgr._profile_mode = True
 
 	anaunit.SetMinEDep(Ecut)

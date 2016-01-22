@@ -9,7 +9,6 @@ namespace ertool {
 		: AnaBase(name)
 		, _result_tree(nullptr)
 	{
-
 		PrepareTreeVariables();
 
 		// TPC.Min(0 + 10,
@@ -22,9 +21,15 @@ namespace ertool {
 
 		// set default energy cut (for counting) to 0
 		_eCut = 0;
+
+	}
+
+	void ERAnaLowEnergyExcess::ProcessBegin() {
+
+		/// Initialize the LEE reweighting package, if in LEE sample mode...
 		if (_LEESample_mode) {
 			_rw.set_debug(false);
-			_rw.set_source_filename("/Users/davidkaleko/larlite/UserDev/LowEnergyExcess/LEEReweight/source/LEE_Reweight_plots.root");
+			_rw.set_source_filename("$LARLITE_USERDEVDIR/LowEnergyExcess/LEEReweight/source/LEE_Reweight_plots.root");
 			_rw.set_n_generated_events(6637);
 			_rw.initialize();
 		}
@@ -53,7 +58,10 @@ namespace ertool {
 		// First off, if no nue was reconstructed, skip this event entirely.
 		for ( auto const & p : particles )
 			if ( abs(p.PdgCode()) == 12 ) reco = true;
-		if (!reco) return false;
+		if (!reco) {
+			// std::cout<<"No reconstructed neutrino in this event."<<std::endl;
+			return false;
+		}
 
 		// Reset the particleID object representing the single electron found
 		// singleE_particleID.Reset();
@@ -61,8 +69,20 @@ namespace ertool {
 		singleE_shower.Reset();
 
 		// Loop over particles and find the nue
+		// std::cout << __PRETTY_FUNCTION__ << " loop over particles... " << std::endl;
 		for ( auto const & p : particles ) {
+
+
+
 			if ( abs(p.PdgCode()) == 12 ) {
+
+				/// Temporarily removing flash finding
+				// // Get the event timing from the most ancestor particle
+				// try {
+				// 	_flash_time = data.Flash(p.Ancestor())._t;
+				// 	// std::cout << "found ancestor flash! ancestor pdg is " << graph.GetParticle(p.Ancestor()).PdgCode() << std::endl;
+				// }
+				// catch ( ERException &e ) { std::cout << " No flash found for ancestor :( " << std::endl;}
 
 				// Save the neutrino vertex to the ana tree
 				_x_vtx = p.Vertex().at(0);
@@ -113,9 +133,10 @@ namespace ertool {
 						// std::cout<<"Made singleE_particleID with vertex "<<daught.Vertex()<<std::endl;
 
 						singleE_shower = data.Shower(daught.RecoID());
+						// std::cout << "singleE_shower actual time is " << singleE_shower._time << std::endl;
 						_e_theta = singleE_shower.Dir().Theta();
 						_e_phi = singleE_shower.Dir().Phi();
-						_is_simple = isInteractionSimple(daught,graph);
+						_is_simple = isInteractionSimple(daught, graph);
 						_dedx = data.Shower(daught.RecoID())._dedx;
 					}
 
@@ -160,6 +181,7 @@ namespace ertool {
 					_parentPDG = parent.PdgCode();
 					_mcPDG = mc.PdgCode();
 					_mcGeneration = mc.Generation();
+
 
 					// if (_mcPDG == 11 && _parentPDG == 13) {
 					// 	std::cout << "found electron, parent muson. electron at " << singleE_shower.Start() << std::endl;
@@ -280,6 +302,7 @@ namespace ertool {
 		_result_tree->Branch("_n_children", &_n_children, "_n_children/I");
 		_result_tree->Branch("_is_simple", &_is_simple, "_is_simple/O");
 		_result_tree->Branch("_dedx", &_dedx, "dedx/D");
+		_result_tree->Branch("_flash_time", &_flash_time, "flash_time/D");
 
 		return;
 	}
@@ -293,7 +316,7 @@ namespace ertool {
 		_parentPDG = -99999;
 		_mcPDG = -99999;
 		_mcGeneration = -99999;
-		_longestTrackLen = 0;
+		_longestTrackLen = 0.;
 		_x_vtx = -999.;
 		_y_vtx = -999.;
 		_z_vtx = -999.;
@@ -305,6 +328,7 @@ namespace ertool {
 		_n_children = -999;
 		_is_simple = false;
 		_dedx = -999.;
+		_flash_time = -999999999.;
 
 		return;
 

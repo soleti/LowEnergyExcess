@@ -53,7 +53,7 @@ namespace ertool {
     void AcceptPSet(const ::fcllite::PSet& cfg){}
 
     /// Called @ before processing the first event sample
-    void ProcessBegin() {};
+    void ProcessBegin();
 
     /// Function to evaluate input showers and determine a score
     bool Analyze(const EventData &data, const ParticleGraph &ps);
@@ -106,6 +106,7 @@ namespace ertool {
     int _n_children;          /// Number of children associated with the neutrino interaction
     bool _is_simple;          /// Whether the interaction is 1e+np+0else (reconstructed)
     double _dedx;             /// dedx of "single electron" shower
+    double _flash_time;       /// opflash associated with electron... flash time
 
     // prepare TTree with variables
     void PrepareTreeVariables();

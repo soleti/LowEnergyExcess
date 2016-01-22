@@ -153,11 +153,15 @@ namespace ertool {
 						::geoalgo::HalfLine ext9_vtx(p.Vertex(),p.Vertex()-p.Momentum().Dir());
 						
 						//auto crs_tpc_ext0 = _geoalg.Intersection(ext0,_vactive);
+
 						auto crs_tpc_ext9     = _geoalg.Intersection(ext9,_vactive);
 						auto crs_tpc_ext9_vtx = _geoalg.Intersection(ext9_vtx,_vactive);
 						//double dist0 = _crs_tpc_ext0[0].Dist(singleE_shower.Start());
-						double dist9     = crs_tpc_ext9[0].Dist(singleE_shower.Start());
-						double dist9_vtx = crs_tpc_ext9_vtx[0].Dist(p.Vertex());
+						
+						double dist9  = 999.;
+						double dist9_vtx = 999.;
+						if(crs_tpc_ext9.size() != 0)     dist9     = crs_tpc_ext9[0].Dist(singleE_shower.Start());
+						if(crs_tpc_ext9_vtx.size() != 0) dist9_vtx = crs_tpc_ext9_vtx[0].Dist(p.Vertex());
 						//if(dist0 > dist9) _dist_2wall = dist9;
 						//else _dist_2wall =dist0;
 						_dist_2wall =dist9;

@@ -16,16 +16,17 @@ bool LEERW::initialize() {
 	util::PlotReader::GetME()->SetFileName(_source_filename.c_str());
 
 	util::PlotReader::GetME()->SetObjectName(_flux_ratio_name.c_str());
-	_flux_ratio = (TGraph*)util::PlotReader::GetME()->GetObject();
+	util::PlotReader::GetME()->GetObject(_flux_ratio);
 	util::PlotReader::GetME()->SetObjectName(_xsec_ratio_name.c_str());
-	_xsec_ratio = (TGraph*)util::PlotReader::GetME()->GetObject();
+	util::PlotReader::GetME()->GetObject(_xsec_ratio);
 	util::PlotReader::GetME()->SetObjectName(_MB_evis_uz_corr_name.c_str());
-	_MB_evis_uz_corr = (TH2D*)util::PlotReader::GetME()->GetObject();
+	util::PlotReader::GetME()->GetObject(_MB_evis_uz_corr);
 	util::PlotReader::GetME()->SetObjectName(_generated_evis_uz_corr_name.c_str());
-	_generated_evis_uz_corr = (TH2D*)util::PlotReader::GetME()->GetObject();
+	util::PlotReader::GetME()->GetObject(_generated_evis_uz_corr);
+
 	//normalize evis correlation plot to unit area
 	//so its integral is total # of expected LEE events in MINIboone
-	_MB_evis_uz_corr->Scale(1. / 1000.);
+	_MB_evis_uz_corr.Scale(1. / 1000.);
 	// _generated_evis_uz_corr->Scale(1. / _generated_evis_uz_corr->Integral());
 
 
@@ -58,13 +59,14 @@ double LEERW::get_sculpting_weight(double electron_energy_MEV, double electron_u
 	check_is_initialized();
 
 	//Poll the 2D histogram to get an initial weight to sculpt energy and angle
-	double weight_numerator = _MB_evis_uz_corr->GetBinContent(
-	                              _MB_evis_uz_corr->GetXaxis()->FindBin(electron_energy_MEV),
-	                              _MB_evis_uz_corr->GetYaxis()->FindBin(electron_uz)
+	
+	double weight_numerator = _MB_evis_uz_corr.GetBinContent(
+	                              _MB_evis_uz_corr.GetXaxis()->FindBin(electron_energy_MEV),
+	                              _MB_evis_uz_corr.GetYaxis()->FindBin(electron_uz)
 	                          );
-	double weight_denominator = _generated_evis_uz_corr->GetBinContent(
-	                                _generated_evis_uz_corr->GetXaxis()->FindBin(electron_energy_MEV),
-	                                _generated_evis_uz_corr->GetYaxis()->FindBin(electron_uz)
+	double weight_denominator = _generated_evis_uz_corr.GetBinContent(
+	                                _generated_evis_uz_corr.GetXaxis()->FindBin(electron_energy_MEV),
+	                                _generated_evis_uz_corr.GetYaxis()->FindBin(electron_uz)
 	                            );
 
 	if (!weight_denominator) {
@@ -125,13 +127,13 @@ double LEERW::get_normalized_weight(double nue_energy_GEV) {
 		std::cout << "Tonnage ratio weight is " << _tonnage_weight << "." << std::endl;
 
 	//XSec weight uses neutrino energy in GEV. It also takes into account the molecular density of different materials.
-	double dummy = _xsec_ratio->Eval(nue_energy_GEV);
+	double dummy = _xsec_ratio.Eval(nue_energy_GEV);
 	if (_debug)
 		std::cout << "XSec ratio weight is " << dummy << "." << std::endl;
 	weight *= dummy;
 
 	//Flux weight uses neutrino energy in GEV. It comes from total neutrino flux ratio microboone to miniboone.
-	dummy = _flux_ratio->Eval(nue_energy_GEV);
+	dummy = _flux_ratio.Eval(nue_energy_GEV);
 	if (_debug)
 		std::cout << "Flux ratio weight is " << dummy << "." << std::endl;
 	weight *= dummy;
@@ -191,7 +193,7 @@ const EventInfo_t LEERW::extract_event_info(const ::larlite::mctruth* mytruth) {
 void LEERW::check_is_initialized() {
 
 	//Check to make sure LEERW instance is fully initialized
-	if (!_flux_ratio || !_xsec_ratio || !_MB_evis_uz_corr || !_generated_evis_uz_corr)
+	if (!_flux_ratio.GetN()|| !_xsec_ratio.GetN() || !_MB_evis_uz_corr.GetEntries() || !_generated_evis_uz_corr.GetEntries())
 		throw std::runtime_error("LEERW Package not fully initialized: Missing input graphs/histos!");
 
 	if (!_n_generated_evts)

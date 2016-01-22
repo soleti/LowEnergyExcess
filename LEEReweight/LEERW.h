@@ -57,10 +57,6 @@ namespace lee {
 
 		/// Default constructor
 		LEERW() {
-			_flux_ratio = 0;
-			_xsec_ratio = 0;
-			_MB_evis_uz_corr = 0;
-			_generated_evis_uz_corr = 0;
 			_source_filename = "";
 		}
 
@@ -108,10 +104,10 @@ namespace lee {
 		//Utility to print event info to screen
 		void print_evt_info(const EventInfo_t evt_info);
 
-		TGraph* _flux_ratio;
-		TGraph* _xsec_ratio;
-		TH2D*   _MB_evis_uz_corr;
-		TH2D*   _generated_evis_uz_corr;
+		TGraph _flux_ratio;
+		TGraph _xsec_ratio;
+		TH2D   _MB_evis_uz_corr;
+		TH2D   _generated_evis_uz_corr;
 
 		/// Number of generated nue events (for absolute normalization)
 		double _n_generated_evts = 0;

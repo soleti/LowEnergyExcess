@@ -34,6 +34,14 @@ namespace ertool {
 			_rw.initialize();
 		}
 
+		// Build Box for TPC active volume
+		_vactive  = ::geoalgo::AABox(0,
+					     -larutil::Geometry::GetME()->DetHalfHeight(),
+					     0,
+					     2 * larutil::Geometry::GetME()->DetHalfWidth(),
+					     larutil::Geometry::GetME()->DetHalfHeight(),
+					     larutil::Geometry::GetME()->DetLength());
+		
 	}
 
 
@@ -41,7 +49,8 @@ namespace ertool {
 	{
 
 		_result_tree->SetName(Form("%s", _treename.c_str()));
-
+		
+		
 		// Reset tree variables
 		// Assume we will mis-ID
 		ResetTreeVariables();
@@ -85,7 +94,7 @@ namespace ertool {
 				// catch ( ERException &e ) { std::cout << " No flash found for ancestor :( " << std::endl;}
 
 				// Save the neutrino vertex to the ana tree
-				_x_vtx = p.Vertex().at(0);
+			        _x_vtx = p.Vertex().at(0);
 				_y_vtx = p.Vertex().at(1);
 				_z_vtx = p.Vertex().at(2);
 
@@ -137,6 +146,26 @@ namespace ertool {
 						_e_theta = singleE_shower.Dir().Theta();
 						_e_phi = singleE_shower.Dir().Phi();
 						_is_simple = isInteractionSimple(daught, graph);
+
+						// B.I.T.E Analysis
+						// Build backward halflines
+						::geoalgo::HalfLine ext9(singleE_shower.Start(),singleE_shower.Start()-singleE_shower.Dir());
+						::geoalgo::HalfLine ext9_vtx(p.Vertex(),p.Vertex()-p.Momentum().Dir());
+						
+						//auto crs_tpc_ext0 = _geoalg.Intersection(ext0,_vactive);
+						auto crs_tpc_ext9     = _geoalg.Intersection(ext9,_vactive);
+						auto crs_tpc_ext9_vtx = _geoalg.Intersection(ext9_vtx,_vactive);
+						//double dist0 = _crs_tpc_ext0[0].Dist(singleE_shower.Start());
+						double dist9     = crs_tpc_ext9[0].Dist(singleE_shower.Start());
+						double dist9_vtx = crs_tpc_ext9_vtx[0].Dist(p.Vertex());
+						//if(dist0 > dist9) _dist_2wall = dist9;
+						//else _dist_2wall =dist0;
+						_dist_2wall =dist9;
+						_dist_2wall_vtx =dist9_vtx;
+						
+						if(crs_tpc_ext9.size() * crs_tpc_ext9_vtx.size()==0)std::cout<<"\n@@@@@@@@@@@@@@@@@@@"<<std::endl;
+						
+						_is_simple = isInteractionSimple(daught,graph);
 						_dedx = data.Shower(daught.RecoID())._dedx;
 					}
 
@@ -303,6 +332,8 @@ namespace ertool {
 		_result_tree->Branch("_is_simple", &_is_simple, "_is_simple/O");
 		_result_tree->Branch("_dedx", &_dedx, "dedx/D");
 		_result_tree->Branch("_flash_time", &_flash_time, "flash_time/D");
+		_result_tree->Branch("_dist_2wall", &_dist_2wall, "dist_2wall/D");
+		_result_tree->Branch("_dist_2wall_vtx", &_dist_2wall_vtx, "dist_2wall_vtx/D");
 
 		return;
 	}
@@ -329,6 +360,8 @@ namespace ertool {
 		_is_simple = false;
 		_dedx = -999.;
 		_flash_time = -999999999.;
+		_dist_2wall_vtx =-999.;
+		_dist_2wall = -999.;
 
 		return;
 

@@ -120,7 +120,12 @@ namespace ertool {
 
     bool _LEESample_mode = false;
 
-protected:
+    // Variables for B.I.T.E analysis
+    double _dist_2wall ;      /// Electron backwards distance 2 wall
+    double _dist_2wall_vtx;   /// Vertex backwards distance 2 wall
+    ::geoalgo::AABox _vactive;
+    
+  protected:
 
   ::lee::LEERW _rw;
   ::geoalgo::GeoAlgo _geoalg;

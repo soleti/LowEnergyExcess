@@ -17,11 +17,10 @@ if sys.argv[1] not in ['reco','mc']:
 from ROOT import gSystem
 from ROOT import larlite as fmwk
 from ROOT import ertool
-from seltool.ccsingleeDef import GetCCSingleEInstance
-from seltool.primaryfinderDef import GetPrimaryFinderInstance
-from seltool.trackpidDef import GetTrackPidInstance
-from seltool.trackDresserDef import GetTrackDresserInstance
-from seltool.primarycosmicDef import GetPrimaryCosmicFinderInstance
+from singleE_config import GetERSelectionInstance
+
+gSystem.Load('libLowEnergyExcess_EventFilters')
+# gSystem.Load('libLowEnergyExcess_ERAnalysis')
 
 # Create ana_processor instance
 my_proc = fmwk.ana_processor()
@@ -37,35 +36,9 @@ for x in xrange(len(sys.argv)-3):
 my_proc.set_io_mode(fmwk.storage_manager.kREAD)
 
 # Specify output root file name
-outfile = sys.argv[-1]+sys.argv[0][:-3]+'_%s'%('mc' if not use_reco else 'reco')+'.root'
+outfile = sys.argv[-1]+'/'+sys.argv[0][:-3]+'_%s'%('mc' if not use_reco else 'reco')+'.root'
+
 my_proc.set_ana_output_file(outfile)
-
-# Get Default CCSingleE Algorithm instance
-# this information is loaded from:
-# $LARLITE_BASEDIR/python/seltool/GetCCSingleEInstance
-my_algo = GetCCSingleEInstance()
-#my_algo.setVerbose(False)
-
-# primary finder algorithm
-# this information is loaded from:
-# $LARLITE_BASEDIR/python/seltool/GetPrimaryFinderInstance
-primary_algo = GetPrimaryFinderInstance()
-
-# primary cosmic algoithm 
-# this information is loaded from:
-# $LARLITE_BASEDIR/python/seltool/primarycosmicDef.py
-cosmicprimary_algo = GetPrimaryCosmicFinderInstance()
-cosmicsecondary_algo = ertool.ERAlgoCRSecondary()
-cosmicorphanalgo = ertool.ERAlgoCROrphan()
-# track PID algorithm
-# this information is loaded from:
-# $LARLITE_BASEDIR/python/seltool/GetTrackPidInstance
-pid_algo = GetTrackPidInstance()
-#pid_algo.setVerbose(False)
-
-# cosmic tagger algo
-cos_algo = GetTrackDresserInstance() #GetCosmicTaggerInstance()
-#cos_algo.setVerbose(False)
 
 # here set E-cut for Helper & Ana modules
 #This cut is applied in helper... ertool showers are not made if the energy of mcshower or reco shower
@@ -79,33 +52,22 @@ lee_ana.SetTreeName("LEETree")
 lee_ana.SetECut(Ecut)
 lee_ana.SetLEESampleMode(True)
 
-lee_anaunit = fmwk.ExampleERSelection()
-lee_anaunit.setDisableXShift(True)
-lee_anaunit._mgr.ClearCfgFile()
-lee_anaunit._mgr.AddCfgFile(os.environ['LARLITE_USERDEVDIR']+'/SelectionTool/ERTool/dat/ertool_default%s.cfg'%('_reco' if use_reco else ''))
+
+
+
+anaunit = GetERSelectionInstance()
+anaunit._mgr.ClearCfgFile()
+anaunit._mgr.AddCfgFile(os.environ['LARLITE_USERDEVDIR']+'/SelectionTool/ERTool/dat/ertool_default%s.cfg'%('_reco' if use_reco else ''))
 
 if use_reco:
-    lee_anaunit.SetShowerProducer(False,'showerrecofuzzy')
-    lee_anaunit.SetTrackProducer(False,'stitchkalmanhitcc')
+    anaunit.SetShowerProducer(False,'showerrecofuzzy')
+    anaunit.SetTrackProducer(False,'stitchkalmanhitcc')
 else:
-    lee_anaunit.SetShowerProducer(True,'mcreco')
-    lee_anaunit.SetTrackProducer(True,'mcreco')
+    anaunit.SetShowerProducer(True,'mcreco')
+    anaunit.SetTrackProducer(True,'mcreco')
 
-lee_anaunit._mgr.AddAlgo(ertool.ERAlgopi0())
-lee_anaunit._mgr.AddAlgo(cos_algo)
-lee_anaunit._mgr.AddAlgo(cosmicprimary_algo)
-lee_anaunit._mgr.AddAlgo(cosmicsecondary_algo)
-lee_anaunit._mgr.AddAlgo(cosmicorphanalgo)
-lee_anaunit._mgr.AddAlgo(primary_algo)
-lee_anaunit._mgr.AddAlgo(pid_algo)
-lee_anaunit._mgr.AddAlgo(my_algo)
-lee_anaunit._mgr.AddAna(lee_ana)
-lee_anaunit._mgr._profile_mode = True
-
-lee_anaunit.SetMinEDep(Ecut)
-lee_anaunit._mgr._mc_for_ana = True
-
-my_proc.add_process(lee_anaunit)
+anaunit._mgr.AddAna(lee_ana)
+my_proc.add_process(anaunit)
 
 my_proc.run()
 # my_proc.run(0,500)

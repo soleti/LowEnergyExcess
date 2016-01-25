@@ -74,8 +74,8 @@ anaunit._mgr.AddAna(LEEana)
 my_proc.add_process(eventfilter)
 my_proc.add_process(anaunit)
 
-#my_proc.run()
-my_proc.run(0,500)
+my_proc.run()
+#my_proc.run(0,500)
 
 # done!
 print

@@ -169,7 +169,7 @@ namespace ertool {
 						_dist_2wall =dist9;
 						_dist_2wall_vtx =dist9_vtx;
 						
-						//if(crs_tpc_ext9.size() * crs_tpc_ext9_vtx.size()==0)std::cout<<"\n@@@@@@@@@@@@@@@@@@@"<<std::endl;
+						if(crs_tpc_ext9.size() * crs_tpc_ext9_vtx.size()==0)std::cout<<"\nHi, I'm a cosmic and I don't intersect TPC."<<std::endl;
 						///###### B.I.T.E Analysis END #####
 						_is_simple = isInteractionSimple(daught,graph);
 						_dedx = data.Shower(daught.RecoID())._dedx;

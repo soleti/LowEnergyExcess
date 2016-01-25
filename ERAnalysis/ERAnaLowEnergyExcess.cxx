@@ -173,7 +173,6 @@ namespace ertool {
 					    ///###### B.I.T.E Analysis END #####
 						_is_simple = isInteractionSimple(daught,graph);
 						_dedx = data.Shower(daught.RecoID())._dedx;
-						_true_e_time = singleE_shower._time;
 
 					}
 
@@ -339,7 +338,6 @@ namespace ertool {
 		_result_tree->Branch("_n_children", &_n_children, "_n_children/I");
 		_result_tree->Branch("_is_simple", &_is_simple, "_is_simple/O");
 		_result_tree->Branch("_dedx", &_dedx, "dedx/D");
-		_result_tree->Branch("_true_e_time", &_true_e_time, "true_e_time/D");
 		_result_tree->Branch("_flash_time", &_flash_time, "flash_time/D");
 		_result_tree->Branch("_dist_2wall", &_dist_2wall, "dist_2wall/D");
 		_result_tree->Branch("_dist_2wall_vtx", &_dist_2wall_vtx, "dist_2wall_vtx/D");
@@ -369,7 +367,6 @@ namespace ertool {
 		_is_simple = false;
 		_dedx = -999.;
 		_flash_time = -999999999.;
-		_true_e_time = -999999999.;
 		_dist_2wall_vtx = -999.;
 		_dist_2wall = -999.;
 				

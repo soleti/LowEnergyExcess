@@ -107,6 +107,7 @@ namespace ertool {
     bool _is_simple;          /// Whether the interaction is 1e+np+0else (reconstructed)
     double _dedx;             /// dedx of "single electron" shower
     double _flash_time;       /// opflash associated with electron... flash time
+    double _true_e_time;
 
     // prepare TTree with variables
     void PrepareTreeVariables();

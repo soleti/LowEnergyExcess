@@ -147,7 +147,7 @@ namespace ertool {
 						_e_phi = singleE_shower.Dir().Phi();
 						_is_simple = isInteractionSimple(daught, graph);
 
-						// B.I.T.E Analysis
+						///###### B.I.T.E Analysis Start #####
 						// Build backward halflines
 						::geoalgo::HalfLine ext9(singleE_shower.Start(), singleE_shower.Start() - singleE_shower.Dir());
 						::geoalgo::HalfLine ext9_vtx(p.Vertex(), p.Vertex() - p.Momentum().Dir());
@@ -164,15 +164,17 @@ namespace ertool {
 						if (crs_tpc_ext9_vtx.size()) dist9_vtx = crs_tpc_ext9_vtx[0].Dist(p.Vertex());
 						//if(dist0 > dist9) _dist_2wall = dist9;
 						//else _dist_2wall =dist0;
-						_dist_2wall = dist9;
-						_dist_2wall_vtx = dist9_vtx;
 
-						if (!crs_tpc_ext9.size() || !crs_tpc_ext9_vtx.size())std::cout << "\n@@@@@@@@@@@@@@@@@@@" << std::endl;
-
-						_is_simple = isInteractionSimple(daught, graph);
-						_dedx = singleE_shower._dedx;
-
+						_dist_2wall =dist9;
+						_dist_2wall_vtx =dist9_vtx;
+						
+						// if(!crs_tpc_ext9.size() || !crs_tpc_ext9_vtx.size())std::cout<<"\nHi, I'm a cosmic and I don't intersect TPC."<<std::endl;
+					    
+					    ///###### B.I.T.E Analysis END #####
+						_is_simple = isInteractionSimple(daught,graph);
+						_dedx = data.Shower(daught.RecoID())._dedx;
 						_true_e_time = singleE_shower._time;
+
 					}
 
 					_e_nuReco += daught.KineticEnergy();
@@ -341,7 +343,7 @@ namespace ertool {
 		_result_tree->Branch("_flash_time", &_flash_time, "flash_time/D");
 		_result_tree->Branch("_dist_2wall", &_dist_2wall, "dist_2wall/D");
 		_result_tree->Branch("_dist_2wall_vtx", &_dist_2wall_vtx, "dist_2wall_vtx/D");
-
+						
 		return;
 	}
 
@@ -370,7 +372,7 @@ namespace ertool {
 		_true_e_time = -999999999.;
 		_dist_2wall_vtx = -999.;
 		_dist_2wall = -999.;
-
+				
 		return;
 
 	}

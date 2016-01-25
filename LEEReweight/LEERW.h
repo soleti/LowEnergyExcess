@@ -58,6 +58,7 @@ namespace lee {
 		/// Default constructor
 		LEERW() {
 			_source_filename = "";
+			_events_generated_only_in_TPC = true;
 		}
 
 		/// Default destructor
@@ -80,6 +81,10 @@ namespace lee {
 		void set_source_filename(std::string filename) { _source_filename = filename; }
 
 		void set_n_generated_events(size_t david) { _n_generated_evts = david; }
+
+		/// If the generated neutrino sample was only generated in the TPC active volume,
+		/// or if it was generated throughout the entire cryostat volume.
+		void set_events_generated_only_in_TPC(bool kaleko) { _events_generated_only_in_TPC = kaleko; }
 
 		void set_debug(bool david) { _debug = david; }
 
@@ -122,6 +127,7 @@ namespace lee {
 		double _pot_weight = 1.021671826625387; //6.6 / 6.46; //microboone POT over miniboone POT
 		double _tonnage_weight = 0.20943637580123128;//UB_TONNAGE_GRAMS / MINIBOONE_TONNAGE_GRAMS; //roughly 0.2
 		double _true_MB_excess_evts = 1212.114;
+		bool _events_generated_only_in_TPC;
 
 		bool _debug = false;
 

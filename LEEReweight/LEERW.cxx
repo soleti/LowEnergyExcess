@@ -143,9 +143,9 @@ double LEERW::get_normalized_weight(double nue_energy_GEV) {
 	// "_n_generated_evts" is the number of events generated in the entire cryostat.
 	// If you generated events only inside of the TPC, you need to take into account the ratio
 	// of entire cryostat volume to TPC volume
-	// For now, I have the ratio of volumes as 190 tons / 70 tons = 2.71 ... this should probably be
+	// For now, I have the ratio of volumes as 171 tons / 86 tons = 1.99 ... this should probably be
 	// replaced with a more precise value.
-	if ( _events_generated_only_in_TPC ) _n_generated_evts /= 2.71;
+	if ( _events_generated_only_in_TPC ) _n_generated_evts /= 1.99;
 
 	//Overall normalization comes from the fact MiniBooNE saw 1212 excess events (MB efficiency unfolded)
 	//Use the number of generated events to compute an overall normalization weight

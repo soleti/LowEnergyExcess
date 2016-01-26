@@ -90,8 +90,9 @@ namespace ertool {
 					// Careful: p.Ancestor() returns a NODEID, but the data.Flash() function wants either a flash ID
 					// or an actual particle. Instead, use data.Flash(graph.GetParticle(p.Ancestor()))
 					_flash_time = data.Flash(graph.GetParticle(p.Ancestor()))._t;
+					_summed_flash_PE = data.Flash(graph.GetParticle(p.Ancestor())).TotalPE();
 				}
-				catch ( ERException &e ) { std::cout << " No flash found for ancestor :( " << std::endl;}
+				catch ( ERException &e ) {}// std::cout << " No flash found for ancestor :( " << std::endl;}
 
 				// Save the neutrino vertex to the ana tree
 				_x_vtx = p.Vertex().at(0);
@@ -339,6 +340,8 @@ namespace ertool {
 		_result_tree->Branch("_is_simple", &_is_simple, "_is_simple/O");
 		_result_tree->Branch("_dedx", &_dedx, "dedx/D");
 		_result_tree->Branch("_flash_time", &_flash_time, "flash_time/D");
+		_result_tree->Branch("_summed_flash_PE", &_summed_flash_PE, "summed_flash_PE/D");
+
 		_result_tree->Branch("_dist_2wall", &_dist_2wall, "dist_2wall/D");
 		_result_tree->Branch("_dist_2wall_vtx", &_dist_2wall_vtx, "dist_2wall_vtx/D");
 						
@@ -367,6 +370,7 @@ namespace ertool {
 		_is_simple = false;
 		_dedx = -999.;
 		_flash_time = -999999999.;
+		_summed_flash_PE = -999999999.;
 		_dist_2wall_vtx = -999.;
 		_dist_2wall = -999.;
 				

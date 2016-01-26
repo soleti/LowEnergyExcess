@@ -12,7 +12,9 @@ from seltool.pi0algDef import GetERAlgoPi0Instance
 def GetERSelectionInstance():
 
 	# Make an instance of ERAlgoFlashMatch using defaults defined in ertool_default(_mc).cfg
-	# flashmatch_algo = ertool.ERAlgoFlashMatch()
+	flashmatch_algo = ertool.ERAlgoFlashMatch()
+	flashmatch_algo.SetIgnoreShowers(False)
+	flashmatch_algo.SetIgnoreCosmics(True)
 
 	# Get Default CCSingleE Algorithm instance
 	# this information is loaded from:
@@ -50,8 +52,12 @@ def GetERSelectionInstance():
 	Ecut = 50 # in MeV
 
 	anaunit = fmwk.ExampleERSelection()
-	anaunit.setDisableXShift(True)
+	anaunit.setDisableXShift(False)
 
+	#By default for now using mcreco
+	anaunit.SetShowerProducer(True,'mcreco')
+	anaunit.SetTrackProducer(True,'mcreco')
+	anaunit.SetFlashProducer('opflash')
 
 	anaunit._mgr.AddAlgo(pi0_algo)
 	anaunit._mgr.AddAlgo(cos_algo)
@@ -61,7 +67,6 @@ def GetERSelectionInstance():
 	anaunit._mgr.AddAlgo(primary_algo)
 	anaunit._mgr.AddAlgo(pid_algo)
 	anaunit._mgr.AddAlgo(ccsinglee_algo)
-	# anaunit._mgr.AddAlgo(ccsinglee_algo)
 	# Is this where flashmatch_algo should go?
 	# First we reconstruct nues and all that, then say if the electron's associated flash
 	# is outside of the BGW we throw it out?
@@ -71,7 +76,7 @@ def GetERSelectionInstance():
 	# However, right now all solo shower particles are tagged as cosmic by the flash-matcher
 	# Because it only works for tracks! For now, flashmatch_algo has to live after
 	# and it has to be an analysis cut. This will be changed ASAP.
-	# anaunit._mgr.AddAlgo(flashmatch_algo)
+	anaunit._mgr.AddAlgo(flashmatch_algo)
 	anaunit._mgr._profile_mode = True
 
 	anaunit.SetMinEDep(Ecut)

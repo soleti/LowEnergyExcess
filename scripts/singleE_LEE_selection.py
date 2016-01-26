@@ -19,9 +19,6 @@ from ROOT import larlite as fmwk
 from ROOT import ertool
 from singleE_config import GetERSelectionInstance
 
-gSystem.Load('libLowEnergyExcess_EventFilters')
-# gSystem.Load('libLowEnergyExcess_ERAnalysis')
-
 # Create ana_processor instance
 my_proc = fmwk.ana_processor()
 my_proc.enable_filter(True)
@@ -53,8 +50,6 @@ lee_ana.SetECut(Ecut)
 lee_ana.SetLEESampleMode(True)
 
 
-
-
 anaunit = GetERSelectionInstance()
 anaunit._mgr.ClearCfgFile()
 anaunit._mgr.AddCfgFile(os.environ['LARLITE_USERDEVDIR']+'/SelectionTool/ERTool/dat/ertool_default%s.cfg'%('_reco' if use_reco else ''))
@@ -62,9 +57,7 @@ anaunit._mgr.AddCfgFile(os.environ['LARLITE_USERDEVDIR']+'/SelectionTool/ERTool/
 if use_reco:
     anaunit.SetShowerProducer(False,'showerrecofuzzy')
     anaunit.SetTrackProducer(False,'stitchkalmanhitcc')
-else:
-    anaunit.SetShowerProducer(True,'mcreco')
-    anaunit.SetTrackProducer(True,'mcreco')
+
 
 anaunit._mgr.AddAna(lee_ana)
 my_proc.add_process(anaunit)

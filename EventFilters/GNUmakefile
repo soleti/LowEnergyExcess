@@ -27,8 +27,8 @@ include $(LARLITE_BASEDIR)/Makefile/Makefile.${OSNAME}
 # set linker flags
 LDFLAGS += -L$(shell root-config --libdir)
 LDFLAGS += $(shell larlite-config --libs)
+LDFLAGS += $(shell seltool-config --libs)
+#LDFLAGS += $(shell larliteapp-config --libs)
 
 # call the common GNUmakefile
-LDFLAGS += $(shell larlite-config --libs)
-LDFLAGS += $(shell seltool-config --libs)
 include $(LARLITE_BASEDIR)/Makefile/GNUmakefile.CORE

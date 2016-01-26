@@ -58,9 +58,6 @@ anaunit._mgr.AddCfgFile(os.environ['LARLITE_USERDEVDIR']+'/SelectionTool/ERTool/
 if use_reco:
 	anaunit.SetShowerProducer(False,'showerrecofuzzy')
 	anaunit.SetTrackProducer(False,'stitchkalmanhitcc')
-else:
-	anaunit.SetShowerProducer(True,'mcreco')
-	anaunit.SetTrackProducer(True,'mcreco')
 
 #anaunit.SetFlashProducer('opflash')
 

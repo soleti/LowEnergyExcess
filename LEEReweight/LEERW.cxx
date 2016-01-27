@@ -13,6 +13,13 @@ bool LEERW::initialize() {
 	if (!_n_generated_evts)
 		throw std::runtime_error("LEERW needs to be told how many nue events were generated.");
 
+	// "_n_generated_evts" is the number of events generated in the entire cryostat.
+	// If you generated events only inside of the TPC, you need to take into account the ratio
+	// of entire cryostat volume to TPC volume
+	// For now, I have the ratio of volumes as 171 tons / 86 tons = 1.99 ... this should probably be
+	// replaced with a more precise value.
+	if ( _events_generated_only_in_TPC ) _n_generated_evts /= 1.99;
+
 	util::PlotReader::GetME()->SetFileName(_source_filename.c_str());
 
 	util::PlotReader::GetME()->SetObjectName(_flux_ratio_name.c_str());
@@ -139,13 +146,6 @@ double LEERW::get_normalized_weight(double nue_energy_GEV) {
 	weight *= dummy;
 
 	// Efficiency is not included in the weight calculation, this will come from whatever analysis is using this reweighter.
-
-	// "_n_generated_evts" is the number of events generated in the entire cryostat.
-	// If you generated events only inside of the TPC, you need to take into account the ratio
-	// of entire cryostat volume to TPC volume
-	// For now, I have the ratio of volumes as 171 tons / 86 tons = 1.99 ... this should probably be
-	// replaced with a more precise value.
-	if ( _events_generated_only_in_TPC ) _n_generated_evts /= 1.99;
 
 	//Overall normalization comes from the fact MiniBooNE saw 1212 excess events (MB efficiency unfolded)
 	//Use the number of generated events to compute an overall normalization weight

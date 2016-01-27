@@ -293,9 +293,6 @@ namespace ertool {
 			if (e_E_MEV < 0 || e_uz < -1 || nu_E_GEV < 0)
 				std::cout << "wtf i don't understand" << std::endl;
 			_weight = _rw.get_sculpting_weight(e_E_MEV, e_uz) * _rw.get_normalized_weight(nu_E_GEV);
-			//temp debug
-			_weight *= 2.716;
-
 		}
 		_result_tree->Fill();
 

@@ -146,6 +146,8 @@ namespace ertool {
 						// std::cout << "singleE_shower actual time is " << singleE_shower._time << std::endl;
 						_e_theta = singleE_shower.Dir().Theta();
 						_e_phi = singleE_shower.Dir().Phi();
+						_e_Edep = singleE_shower._energy;
+						_e_CCQE = _eccqecalc.ComputeECCQE(singleE_shower) * 1000.;
 						_is_simple = isInteractionSimple(daught, graph);
 
 						///###### B.I.T.E Analysis Start #####
@@ -330,6 +332,8 @@ namespace ertool {
 		_result_tree->Branch("_z_vtx", &_z_vtx, "z_vtx/D");
 		_result_tree->Branch("_e_theta", &_e_theta, "_e_theta/D");
 		_result_tree->Branch("_e_phi", &_e_phi, "_e_phi/D");
+		_result_tree->Branch("_e_Edep", &_e_Edep, "_e_Edep/D");
+		_result_tree->Branch("_e_CCQE", &_e_CCQE, "_e_CCQE/D");
 		_result_tree->Branch("_nu_theta", &_nu_theta, "_nu_theta/D");
 		_result_tree->Branch("_nu_pt", &_nu_pt, "_nu_pt/D");
 		_result_tree->Branch("_nu_p", &_nu_p, "_nu_p/D");
@@ -360,6 +364,8 @@ namespace ertool {
 		_z_vtx = -999.;
 		_e_theta = -999.;
 		_e_phi = -999.;
+		_e_Edep = -999.;
+		_e_CCQE = -999.;
 		_nu_p = -999.;
 		_nu_pt = -999.;
 		_nu_theta = -999.;

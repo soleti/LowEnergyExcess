@@ -98,7 +98,9 @@ namespace ertool {
 				_x_vtx = p.Vertex().at(0);
 				_y_vtx = p.Vertex().at(1);
 				_z_vtx = p.Vertex().at(2);
-
+				geoalgo::Vector pos_vtx(_x_vtx,_y_vtx,_z_vtx);
+				//if(_vactive.Contain(pos_vtx)>0) std::cout<<"vtx found inside TPC active"<<std::endl;
+				//if(_vactive.Contain(pos_vtx)==0) std::cout<<"vtx found outside TPC active"<<std::endl;
 				// Save the neutrino direction and momentum information to the ana tree
 				_nu_theta = p.Momentum().Theta();
 				_nu_p = p.Momentum().Length();
@@ -152,9 +154,21 @@ namespace ertool {
 
 						///###### B.I.T.E Analysis Start #####
 						// Build backward halflines
-						::geoalgo::HalfLine ext9(singleE_shower.Start(), singleE_shower.Start() - singleE_shower.Dir());
-						::geoalgo::HalfLine ext9_vtx(p.Vertex(), p.Vertex() - p.Momentum().Dir());
-
+						//::geoalgo::HalfLine ext9(singleE_shower.Start(), singleE_shower.Start() - singleE_shower.Dir());
+						//::geoalgo::HalfLine ext9_vtx(p.Vertex(), p.Vertex() - p.Momentum().Dir());
+						
+						::geoalgo::Vector shr_dir(-singleE_shower.Dir()[0],
+									  -singleE_shower.Dir()[1],
+									  -singleE_shower.Dir()[2]);
+						::geoalgo::Vector vtx_dir(-p.Momentum().Dir()[0],
+									  -p.Momentum().Dir()[1],
+									  -p.Momentum().Dir()[2]);
+						::geoalgo::HalfLine ext9(singleE_shower.Start(),shr_dir);
+						::geoalgo::HalfLine ext9_vtx(p.Vertex(), vtx_dir);
+						
+						_ext9 = ext9;
+						_ext9_vtx = ext9_vtx;
+						
 						//auto crs_tpc_ext0 = _geoalg.Intersection(ext0,_vactive);
 
 						auto crs_tpc_ext9     = _geoalg.Intersection(ext9, _vactive);

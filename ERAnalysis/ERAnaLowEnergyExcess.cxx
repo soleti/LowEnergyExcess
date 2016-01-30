@@ -84,7 +84,8 @@ namespace ertool {
 		for ( auto const & p : particles ) {
 
 			if ( abs(p.PdgCode()) == 12 ) {
-
+				// std::cout << "Found a nue" << std::endl;
+				if(p.ProcessType()==kPiZeroMID) _maybe_pi0_MID = true;
 				// Get the event timing from the most ancestor particle
 				try {
 					// Careful: p.Ancestor() returns a NODEID, but the data.Flash() function wants either a flash ID
@@ -98,7 +99,7 @@ namespace ertool {
 				_x_vtx = p.Vertex().at(0);
 				_y_vtx = p.Vertex().at(1);
 				_z_vtx = p.Vertex().at(2);
-				geoalgo::Vector pos_vtx(_x_vtx,_y_vtx,_z_vtx);
+				geoalgo::Vector pos_vtx(_x_vtx, _y_vtx, _z_vtx);
 				//if(_vactive.Contain(pos_vtx)>0) std::cout<<"vtx found inside TPC active"<<std::endl;
 				//if(_vactive.Contain(pos_vtx)==0) std::cout<<"vtx found outside TPC active"<<std::endl;
 				// Save the neutrino direction and momentum information to the ana tree
@@ -115,8 +116,11 @@ namespace ertool {
 				_e_dep = 0;
 				auto const descendants = graph.GetAllDescendantNodes(p.ID());
 				_n_children = descendants.size();
+				// std::cout << "nue's descendants are: ";
 				for ( auto const & desc : descendants) {
 					auto const & part = graph.GetParticle(desc);
+					// std::cout << part.PdgCode() << ", ";
+					if(part.PdgCode() == 22) std::cout<<"WTF gamma is daughter of neutrino?"<<std::endl;
 					// does this particle have a reco ID?
 					if (part.HasRecoObject() == true) {
 						// get the reco object's dep. energy
@@ -129,6 +133,7 @@ namespace ertool {
 						}
 					}// if the particle has a reco object
 				}// for all neutrino descendants
+				// std::cout << std::endl;
 
 				// Compute the neutrino energy
 				_e_nuReco = 0;
@@ -156,19 +161,19 @@ namespace ertool {
 						// Build backward halflines
 						//::geoalgo::HalfLine ext9(singleE_shower.Start(), singleE_shower.Start() - singleE_shower.Dir());
 						//::geoalgo::HalfLine ext9_vtx(p.Vertex(), p.Vertex() - p.Momentum().Dir());
-						
+
 						::geoalgo::Vector shr_dir(-singleE_shower.Dir()[0],
-									  -singleE_shower.Dir()[1],
-									  -singleE_shower.Dir()[2]);
+						                          -singleE_shower.Dir()[1],
+						                          -singleE_shower.Dir()[2]);
 						::geoalgo::Vector vtx_dir(-p.Momentum().Dir()[0],
-									  -p.Momentum().Dir()[1],
-									  -p.Momentum().Dir()[2]);
-						::geoalgo::HalfLine ext9(singleE_shower.Start(),shr_dir);
+						                          -p.Momentum().Dir()[1],
+						                          -p.Momentum().Dir()[2]);
+						::geoalgo::HalfLine ext9(singleE_shower.Start(), shr_dir);
 						::geoalgo::HalfLine ext9_vtx(p.Vertex(), vtx_dir);
-						
-						_ext9 = ext9;
-						_ext9_vtx = ext9_vtx;
-						
+
+						// _ext9 = ext9;
+						// _ext9_vtx = ext9_vtx;
+
 						//auto crs_tpc_ext0 = _geoalg.Intersection(ext0,_vactive);
 
 						auto crs_tpc_ext9     = _geoalg.Intersection(ext9, _vactive);
@@ -182,13 +187,13 @@ namespace ertool {
 						//if(dist0 > dist9) _dist_2wall = dist9;
 						//else _dist_2wall =dist0;
 
-						_dist_2wall =dist9;
-						_dist_2wall_vtx =dist9_vtx;
-						
+						_dist_2wall = dist9;
+						_dist_2wall_vtx = dist9_vtx;
+
 						// if(!crs_tpc_ext9.size() || !crs_tpc_ext9_vtx.size())std::cout<<"\nHi, I'm a cosmic and I don't intersect TPC."<<std::endl;
-					    
-					    ///###### B.I.T.E Analysis END #####
-						_is_simple = isInteractionSimple(daught,graph);
+
+						///###### B.I.T.E Analysis END #####
+						_is_simple = isInteractionSimple(daught, graph);
 						_dedx = data.Shower(daught.RecoID())._dedx;
 
 					}
@@ -258,7 +263,7 @@ namespace ertool {
 
 			if (!_LEESample_mode) {
 				/// This stuff takes the truth neutrino information and fills flux_reweight-relevant
-				/// branches in the ttree (used later on to weight events in final stacked histograms)
+				/// branches in the ttree (used later on to weight events in  stacked histograms)
 				if (abs(mc.PdgCode()) == 12 || abs(mc.PdgCode()) == 14 ) {
 
 					int ntype = 0;
@@ -317,7 +322,6 @@ namespace ertool {
 
 	void ERAnaLowEnergyExcess::ProcessEnd(TFile * fout)
 	{
-
 		if (fout) {
 			fout->cd();
 			_result_tree->Write();
@@ -359,7 +363,8 @@ namespace ertool {
 
 		_result_tree->Branch("_dist_2wall", &_dist_2wall, "dist_2wall/D");
 		_result_tree->Branch("_dist_2wall_vtx", &_dist_2wall_vtx, "dist_2wall_vtx/D");
-						
+		_result_tree->Branch("_maybe_pi0_MID", &_maybe_pi0_MID, "_maybe_pi0_MID/O");
+
 		return;
 	}
 
@@ -390,7 +395,8 @@ namespace ertool {
 		_summed_flash_PE = -999999999.;
 		_dist_2wall_vtx = -999.;
 		_dist_2wall = -999.;
-				
+		_maybe_pi0_MID = false;
+
 		return;
 
 	}

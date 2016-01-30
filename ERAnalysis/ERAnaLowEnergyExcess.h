@@ -111,6 +111,7 @@ namespace ertool {
         double _dedx;             /// dedx of "single electron" shower
         double _flash_time;       /// opflash associated with electron... flash time
         double _summed_flash_PE;  /// total reconstructed PE of the flash
+        bool _maybe_pi0_MID;    /// whether the neutrino has a gamma tagged as one of its children
 
         // prepare TTree with variables
         void PrepareTreeVariables();

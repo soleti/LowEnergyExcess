@@ -50,6 +50,7 @@ def GetERSelectionInstance():
 	#is below this threshold. This has to be above 0 or else the code may segfault. This is not a "physics cut".
 	#Do not change this value unless you know what you are doing.
 	Ecut = 50 # in MeV
+	#Ecut = 20 #temporary trying this to see if it helps pi0 mids at low energy
 
 	anaunit = fmwk.ExampleERSelection()
 	anaunit.setDisableXShift(False)
@@ -77,6 +78,11 @@ def GetERSelectionInstance():
 	# Because it only works for tracks! For now, flashmatch_algo has to live after
 	# and it has to be an analysis cut. This will be changed ASAP.
 	anaunit._mgr.AddAlgo(flashmatch_algo)
+
+	# Testing adding this... it looks for flashes shared b/t the neutrino and others
+	# and potentially adds the "others" as children of the neutrino, or tags
+	# the neutrino as a pi0 MID
+	anaunit._mgr.AddAlgo(ertool.ERAlgoNueSharedFlashMerger())
 	anaunit._mgr._profile_mode = True
 
 	anaunit.SetMinEDep(Ecut)

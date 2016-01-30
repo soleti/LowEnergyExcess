@@ -161,18 +161,15 @@ namespace ertool {
 						// Build backward halflines
 						//::geoalgo::HalfLine ext9(singleE_shower.Start(), singleE_shower.Start() - singleE_shower.Dir());
 						//::geoalgo::HalfLine ext9_vtx(p.Vertex(), p.Vertex() - p.Momentum().Dir());
-
-						::geoalgo::Vector shr_dir(-singleE_shower.Dir()[0],
-						                          -singleE_shower.Dir()[1],
-						                          -singleE_shower.Dir()[2]);
-						::geoalgo::Vector vtx_dir(-p.Momentum().Dir()[0],
-						                          -p.Momentum().Dir()[1],
-						                          -p.Momentum().Dir()[2]);
-						::geoalgo::HalfLine ext9(singleE_shower.Start(), shr_dir);
-						::geoalgo::HalfLine ext9_vtx(p.Vertex(), vtx_dir);
-
-						// _ext9 = ext9;
-						// _ext9_vtx = ext9_vtx;
+	
+						::geoalgo::Vector inverse_shr_dir(-singleE_shower.Dir()[0],
+									  -singleE_shower.Dir()[1],
+									  -singleE_shower.Dir()[2]);
+						::geoalgo::Vector inverse_vtx_dir(-p.Momentum().Dir()[0],
+									  -p.Momentum().Dir()[1],
+									  -p.Momentum().Dir()[2]);
+						::geoalgo::HalfLine ext9(singleE_shower.Start(),inverse_shr_dir);
+						::geoalgo::HalfLine ext9_vtx(p.Vertex(), inverse_vtx_dir);
 
 						//auto crs_tpc_ext0 = _geoalg.Intersection(ext0,_vactive);
 

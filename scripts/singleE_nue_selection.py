@@ -37,19 +37,13 @@ outfile = sys.argv[-1]+'/'+sys.argv[0][:-3]+'_%s'%('mc' if not use_reco else 're
 print "%s output file = %s"%(sys.argv[0],outfile)
 my_proc.set_ana_output_file(outfile)
 
-# here set E-cut for Helper & Ana modules
-#This cut is applied in helper... ertool showers are not made if the energy of mcshower or reco shower
-#is below this threshold. This has to be above 0 or else the code may segfault. This is not a "physics cut".
-#Do not change this value unless you know what you are doing.
-Ecut = 50 # in MeV
-
 #nueCC beam
 eventfilter = fmwk.MC_CCnue_Filter()
 
 LEEana = ertool.ERAnaLowEnergyExcess()
 LEEana.SetTreeName("beamNuE")
 #LEEana.SetDebug(False)
-LEEana.SetECut(Ecut)
+
 
 anaunit = GetERSelectionInstance()
 anaunit._mgr.ClearCfgFile()

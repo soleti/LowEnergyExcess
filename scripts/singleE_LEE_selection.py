@@ -37,16 +37,9 @@ outfile = sys.argv[-1]+'/'+sys.argv[0][:-3]+'_%s'%('mc' if not use_reco else 're
 
 my_proc.set_ana_output_file(outfile)
 
-# here set E-cut for Helper & Ana modules
-#This cut is applied in helper... ertool showers are not made if the energy of mcshower or reco shower
-#is below this threshold. This has to be above 0 or else the code may segfault. This is not a "physics cut".
-#Do not change this value unless you know what you are doing.
-Ecut = 50 # in MeV
-
 lee_ana = ertool.ERAnaLowEnergyExcess()
 lee_ana.SetTreeName("LEETree")
 #lee_ana.SetDebug(False)
-lee_ana.SetECut(Ecut)
 lee_ana.SetLEESampleMode(True)
 
 

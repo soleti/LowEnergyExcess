@@ -49,8 +49,8 @@ def GetERSelectionInstance():
 	#This cut is applied in helper... ertool showers are not made if the energy of mcshower or reco shower
 	#is below this threshold. This has to be above 0 or else the code may segfault. This is not a "physics cut".
 	#Do not change this value unless you know what you are doing.
-	Ecut = 50 # in MeV
-	#Ecut = 20 #temporary trying this to see if it helps pi0 mids at low energy
+	#Ecut = 50 # in MeV
+	Ecut = 20 #temporary trying this to see if it helps pi0 mids at low energy
 
 	anaunit = fmwk.ExampleERSelection()
 	anaunit.setDisableXShift(False)

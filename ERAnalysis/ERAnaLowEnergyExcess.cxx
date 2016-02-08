@@ -264,9 +264,8 @@ namespace ertool {
 			return _rw.get_sculpting_weight(e_E_MEV, e_uz) * _rw.get_normalized_weight(nu_E_GEV);
 		}
 
-		/// Shouldn't get here
-		std::cout << "How the heck did you get here?!?!" << std::endl;
-		return -1.;
+		/// You get here if you are running on cosmics (no truth neutrino in the event)
+		return 1;
 	}
 
 	void ERAnaLowEnergyExcess::PrepareTreeVariables() {

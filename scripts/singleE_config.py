@@ -66,7 +66,7 @@ def GetERSelectionInstance():
 	anaunit._mgr.AddAlgo(cosmicsecondary_algo)
 	anaunit._mgr.AddAlgo(cosmicorphanalgo)
 	anaunit._mgr.AddAlgo(primary_algo)
-	anaunit._mgr.AddAlgo(pid_algo)
+	# anaunit._mgr.AddAlgo(pid_algo)
 	anaunit._mgr.AddAlgo(ccsinglee_algo)
 	# Is this where flashmatch_algo should go?
 	# First we reconstruct nues and all that, then say if the electron's associated flash

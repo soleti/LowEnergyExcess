@@ -49,7 +49,6 @@ namespace ertool {
 
 	bool ERAnaLowEnergyExcess::Analyze(const EventData &data, const ParticleGraph &graph)
 	{
-
 		_result_tree->SetName(Form("%s", _treename.c_str()));
 
 
@@ -67,8 +66,12 @@ namespace ertool {
 		auto const& particles = graph.GetParticleArray();
 
 		// First off, if no nue was reconstructed, skip this event entirely.
+		// Also if more than one nues were reconstructed, keep track of that too
 		for ( auto const & p : particles )
-			if ( abs(p.PdgCode()) == 12 ) reco = true;
+			if ( abs(p.PdgCode()) == 12 ) {
+				_n_nues_in_evt++;
+				reco = true;
+			}
 		if (!reco) {
 			// std::cout<<"No reconstructed neutrino in this event."<<std::endl;
 			return false;
@@ -84,11 +87,11 @@ namespace ertool {
 		for ( auto const & p : particles ) {
 
 			if ( abs(p.PdgCode()) == 12 ) {
-				// std::cout << "Found a nue" << std::endl;
-				if(p.ProcessType()==kPiZeroMID) _maybe_pi0_MID = true;
+				_n_ertool_showers = graph.GetParticleNodes(RecoType_t::kShower).size();
+				if (p.ProcessType() == kPiZeroMID) _maybe_pi0_MID = true;
 				// Get the event timing from the most ancestor particle
 				try {
-					// Careful: p.Ancestor() returns a NODEID, but the data.Flash() function wants either a flash ID
+					// Carefu l: p.Ancestor() returns a NODEID, but the data.Flash() function wants either a flash ID
 					// or an actual particle. Instead, use data.Flash(graph.GetParticle(p.Ancestor()))
 					_flash_time = data.Flash(graph.GetParticle(p.Ancestor()))._t;
 					_summed_flash_PE = data.Flash(graph.GetParticle(p.Ancestor())).TotalPE();
@@ -114,29 +117,43 @@ namespace ertool {
 
 				// get all descendants of the neutrino in order to calculate total energy deposited
 				_e_dep = 0;
+				_e_nuReco_better = 0;
 				auto const descendants = graph.GetAllDescendantNodes(p.ID());
 				_n_children = descendants.size();
+
+
 				// std::cout << "nue's descendants are: ";
 				for ( auto const & desc : descendants) {
 					auto const & part = graph.GetParticle(desc);
 					// std::cout << part.PdgCode() << ", ";
-					if(part.PdgCode() == 22) std::cout<<"WTF gamma is daughter of neutrino?"<<std::endl;
+					if (part.PdgCode() == 22) std::cout << "WTF gamma is daughter of neutrino?" << std::endl;
+					if (abs(part.PdgCode()) == 13) _has_muon_child = true;
+
+					///haven't yet figured out how to use kINVALID_INT or whatever
+					if (!part.Children().size() && part.PdgCode() != 2212 && part.PdgCode() < 999999) {
+						_e_nuReco_better += part.Mass();
+						// std::cout << "no children, PDG = "<<part.PdgCode()<<", not proton... adding mass: " << part.Mass() << std::endl;
+					}
+
 					// does this particle have a reco ID?
 					if (part.HasRecoObject() == true) {
 						// get the reco object's dep. energy
 						// if shower
 						if (part.RecoType() == kShower) {
 							_e_dep += data.Shower(part.RecoID())._energy;
+							_e_nuReco_better += data.Shower(part.RecoID())._energy;
 						}
 						if (part.RecoType() == kTrack) {
 							_e_dep += data.Track(part.RecoID())._energy;
+							_e_nuReco_better += data.Track(part.RecoID())._energy;
 						}
 					}// if the particle has a reco object
 				}// for all neutrino descendants
 				// std::cout << std::endl;
 
 				// Compute the neutrino energy
-				_e_nuReco = 0;
+				_e_nuReco = 0.;
+
 				//find the neutrino daughter that is a lepton
 				for (auto const& d : p.Children()) {
 
@@ -148,7 +165,7 @@ namespace ertool {
 						// 	daught.Vertex(),
 						// 	daught.Momentum());
 						// std::cout<<"Made singleE_particleID with vertex "<<daught.Vertex()<<std::endl;
-
+						std::cout << "Found the single electron, ID is " << daught.ID() << std::endl;
 						singleE_shower = data.Shower(daught.RecoID());
 						// std::cout << "singleE_shower actual time is " << singleE_shower._time << std::endl;
 						_e_theta = singleE_shower.Dir().Theta();
@@ -161,14 +178,14 @@ namespace ertool {
 						// Build backward halflines
 						//::geoalgo::HalfLine ext9(singleE_shower.Start(), singleE_shower.Start() - singleE_shower.Dir());
 						//::geoalgo::HalfLine ext9_vtx(p.Vertex(), p.Vertex() - p.Momentum().Dir());
-	
+
 						::geoalgo::Vector inverse_shr_dir(-singleE_shower.Dir()[0],
-									  -singleE_shower.Dir()[1],
-									  -singleE_shower.Dir()[2]);
+						                                  -singleE_shower.Dir()[1],
+						                                  -singleE_shower.Dir()[2]);
 						::geoalgo::Vector inverse_vtx_dir(-p.Momentum().Dir()[0],
-									  -p.Momentum().Dir()[1],
-									  -p.Momentum().Dir()[2]);
-						::geoalgo::HalfLine ext9(singleE_shower.Start(),inverse_shr_dir);
+						                                  -p.Momentum().Dir()[1],
+						                                  -p.Momentum().Dir()[2]);
+						::geoalgo::HalfLine ext9(singleE_shower.Start(), inverse_shr_dir);
 						::geoalgo::HalfLine ext9_vtx(p.Vertex(), inverse_vtx_dir);
 
 						//auto crs_tpc_ext0 = _geoalg.Intersection(ext0,_vactive);
@@ -195,19 +212,66 @@ namespace ertool {
 
 					}
 
-					_e_nuReco += daught.KineticEnergy();
+					//Note sometimes particle.KineticEnergy() is infinite!
+					//however Track._energy is fine, so we'll use that for _e_nuReco
 					if (daught.HasRecoObject() == true) {
 						// get the reco object's dep. energy
 						if (daught.RecoType() == kTrack) {
 							auto mytrack = data.Track(daught.RecoID());
+							_e_nuReco += mytrack._energy;
 							double current_tracklen = ( mytrack.back() - mytrack.front() ).Length();
 							if (current_tracklen > _longestTrackLen) _longestTrackLen = current_tracklen;
 						}
+						if (daught.RecoType() == kShower) {
+							_e_nuReco += data.Shower(daught.RecoID())._energy;
+						}
 					}// if the particle has a reco object
 				} // End loop over neutrino children
+
+
+				// //// try new way to compute neutrino energy
+				// std::cout << "----- computing _e_nuReco_better" << std::endl;
+				// _e_nuReco_better = 0.;
+				// /// loop over all neutrino descendants (not just immediate children)
+				// for (auto const& d : graph.GetAllDescendantNodes(p))
+				// {
+				// 	auto desc = graph.GetParticle(d);
+				// 	//if the descendant doesn't have a child and it isn't a proton, add its mass
+				// 	if (!desc.Children().size() && desc.PdgCode() != 2212) {
+				// 		_e_nuReco_better += desc.Mass();
+				// 		std::cout << "no children, not proton... adding mass: " << desc.Mass() << std::endl;
+				// 	}
+
+
+				// 	// regardless add the energy deposited by this descendant
+				// 	if (desc.HasRecoObject() == true) {
+				// 		// get the reco object's dep. energy
+				// 		if (desc.RecoType() == kTrack) {
+				// 			auto mytrack = data.Track(desc.RecoID());
+				// 			_e_nuReco_better += mytrack._energy;
+				// 			std::cout << "Desc is track, adding depo energy " << mytrack._energy << std::endl;
+				// 		}
+				// 		if (desc.RecoType() == kShower) {
+				// 			_e_nuReco_better += data.Shower(desc.RecoID())._energy;
+				// 			std::cout << "Desc is shower, adding depo energy " << data.Shower(desc.RecoID())._energy << std::endl;
+				// 		}
+				// 	}// if the particle has a reco object
+
+				// }
+
+
+
+
+
+
+
+
+
 			}// if we found the neutrino
 		}// End loop over particles
 
+
+		// std::cout << "_e_nuReco = " << _e_nuReco << ", _e_nuReco_better = " << _e_nuReco_better << std::endl;
 		// Get MC particle set
 		auto const& mc_graph = MCParticleGraph();
 		// Get the MC data
@@ -228,32 +292,25 @@ namespace ertool {
 			// shower particle and compare
 			// (note this works for perfect-reco, but there needs more sophisticated methods for reco-reco)
 			if (mc.RecoType() == kShower) {
-				ertool::Shower mc_ertoolshower = data.Shower(mc);
+				ertool::Shower mc_ertoolshower = mc_data.Shower(mc.RecoID());
 				// We match ertool showers from mc particle graph to ertool showers from reco particle graphs
 				// By comparing the energy to double precision... can consider also comparing _dedx and _time as well
 				if (mc_ertoolshower._energy == singleE_shower._energy) {
 					auto parent = mc_graph.GetParticle(mc.Parent());
+					std::cout << "MID found. parent is " << parent.PdgCode() << std::endl;
 					_parentPDG = parent.PdgCode();
+
 					_mcPDG = mc.PdgCode();
+					std::cout << "electron truth pdg is " << _mcPDG << std::endl;
+					std::cout<<"parent ID is "<<parent.RecoID()<<", MID ID is "<<mc.RecoID()<<std::endl;
 					_mcGeneration = mc.Generation();
 
-
-					// if (_mcPDG == 11 && _parentPDG == 13) {
-					// 	std::cout << "found electron, parent muson. electron at " << singleE_shower.Start() << std::endl;
-					// 	if (parent.RecoType() == RecoType_t::kInvisible)
-					// 		std::cout << " parent muon is invisible! event ID "
-					// 		          << data.Event_ID() << ", run " << data.Run() << ", subrun " << data.SubRun() << std::endl;
-					// 	else
-					// 		std::cout << "found electron with parent muon. distance between electron and muon end point is "
-					// 		          << std::sqrt(
-					// 		              singleE_shower.Start().SqDist(mc_data.Track(parent).back())
-					// 		          )
-					// 		          << std::endl;
-					// }
-					// if (abs(_parentPDG) == 11) {
-					// 	std::cout << "Energy of particle tagged is " << mc_ertoolshower._energy << std::endl;
-					// 	std::cout << "PDG of particle tagged is " << _mcPDG << std::endl;
-					// 	// std::cout << mc_graph.Diagram() << std::endl;
+					// if(singleE_shower._energy > 50.){
+					// 	std::cout<<"MID"<<std::endl;
+					// 	std::cout<<"MC PG"<<std::endl;
+					// 	std::cout<<mc_graph.Diagram()<<std::endl;
+					// 	std::cout<<"Reco PG"<<std::endl;
+					// 	std::cout<<graph.Diagram()<<std::endl;
 					// }
 				}
 			}
@@ -261,7 +318,8 @@ namespace ertool {
 			if (!_LEESample_mode) {
 				/// This stuff takes the truth neutrino information and fills flux_reweight-relevant
 				/// branches in the ttree (used later on to weight events in  stacked histograms)
-				if (abs(mc.PdgCode()) == 12 || abs(mc.PdgCode()) == 14 ) {
+				/// Make sure the neutrino is its own ancestor (it wasn't from something decaying IN the event)
+				if ( (abs(mc.PdgCode()) == 12 || abs(mc.PdgCode()) == 14) && mc.Ancestor() == mc.ID() ) {
 
 					int ntype = 0;
 					int ptype = 0;
@@ -291,6 +349,7 @@ namespace ertool {
 						          ::ertool::kPionDecay << std::endl;
 					}
 
+					_ptype = ptype;
 					_weight = _fluxRW.get_weight(E, ntype, ptype);
 
 					break;
@@ -336,8 +395,10 @@ namespace ertool {
 		_result_tree->Branch("_numEvts", &_numEvts, "numEvts/I");
 		_result_tree->Branch("_is_fiducial", &_is_fiducial, "is_fiducial/O");
 		_result_tree->Branch("_e_nuReco", &_e_nuReco, "e_nuReco/D");
+		_result_tree->Branch("_e_nuReco_better", &_e_nuReco_better, "e_nuReco_better/D");
 		_result_tree->Branch("_e_dep", &_e_dep, "e_dep/D");
 		_result_tree->Branch("_weight", &_weight, "weight/D");
+		_result_tree->Branch("_ptype", &_ptype, "ptype/I");
 		_result_tree->Branch("_parentPDG", &_parentPDG, "parent_PDG/I");
 		_result_tree->Branch("_mcPDG", &_mcPDG, "mc_PDG/I");
 		_result_tree->Branch("_mcGeneration", &_mcGeneration, "mc_Generation/I");
@@ -361,6 +422,9 @@ namespace ertool {
 		_result_tree->Branch("_dist_2wall", &_dist_2wall, "dist_2wall/D");
 		_result_tree->Branch("_dist_2wall_vtx", &_dist_2wall_vtx, "dist_2wall_vtx/D");
 		_result_tree->Branch("_maybe_pi0_MID", &_maybe_pi0_MID, "_maybe_pi0_MID/O");
+		_result_tree->Branch("_n_ertool_showers", &_n_ertool_showers, "_n_ertool_showers/I");
+		_result_tree->Branch("_n_nues_in_evt", &_n_nues_in_evt, "n_nues_in_evt/I");
+		_result_tree->Branch("_has_muon_child", &_has_muon_child, "_has_muon_child/O");
 
 		return;
 	}
@@ -369,9 +433,11 @@ namespace ertool {
 
 		_numEvts = 0;
 		_is_fiducial = false;
-		_e_nuReco = 0;
+		_e_nuReco = 0.;
+		_e_nuReco_better = 0.;
 		_e_dep = 0;
 		_parentPDG = -99999;
+		_ptype = -1;
 		_mcPDG = -99999;
 		_mcGeneration = -99999;
 		_longestTrackLen = 0.;
@@ -393,6 +459,9 @@ namespace ertool {
 		_dist_2wall_vtx = -999.;
 		_dist_2wall = -999.;
 		_maybe_pi0_MID = false;
+		_n_ertool_showers = -1;
+		_n_nues_in_evt = 0;
+		_has_muon_child = false;
 
 		return;
 

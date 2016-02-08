@@ -93,6 +93,7 @@ namespace ertool {
         int _numEvts;
         bool _is_fiducial;
         int _parentPDG;           /// true PDG of parent of the electron (only for running on MC)
+        int _ptype;               /// neutrino ptype to further break down nue slice in stacked histo
         int _mcPDG;               /// true PDG of "single electron" (probably 11 or 22)
         int _mcGeneration;        /// True generation of single electron (to characterize cosmics and other backgrounds)
         double _longestTrackLen;  /// longest track associated with the reconstructed neutrino
@@ -111,7 +112,12 @@ namespace ertool {
         double _dedx;             /// dedx of "single electron" shower
         double _flash_time;       /// opflash associated with electron... flash time
         double _summed_flash_PE;  /// total reconstructed PE of the flash
-        bool _maybe_pi0_MID;    /// whether the neutrino has a gamma tagged as one of its children
+        bool _maybe_pi0_MID;      /// whether the neutrino has a gamma tagged as one of its children
+        int _n_ertool_showers;    /// total number of ertool::Showers in the event
+        int _n_nues_in_evt;       /// # of nues reconstructed in the entire event (pi0 evts sometimes have two  )
+        bool _has_muon_child;     /// If there is a muon associated with the reconstructed nue
+        double _e_nuReco_better;    /// trying a better definition of energy
+
 
         // prepare TTree with variables
         void PrepareTreeVariables();

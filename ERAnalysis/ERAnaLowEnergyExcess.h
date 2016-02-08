@@ -65,11 +65,6 @@ namespace ertool {
         /// setting result tree name for running the LowEExcess plotting code
         void SetTreeName(const std::string& name) { _treename = name; }
 
-        /// set the energy cut to be used when counting particles
-        void SetECut(double c) { _eCut = c; }
-
-        // geoalgo::AABox TPC;
-
         //Set this to true if you're running over LEE sample (so it uses LEE reweighting package)
         void SetLEESampleMode(bool flag) { _LEESample_mode = flag; }
 
@@ -81,17 +76,22 @@ namespace ertool {
         // Determine if the event is "simple" (1e, np, 0else)
         bool isInteractionSimple(const Particle &singleE, const ParticleGraph &ps);
 
+        /// Function to compute BITE relevant variables (in ttree) and fill them
+        void FillBITEVariables(const Shower &singleE_shower, const Particle &p);
+
+        /// Function to compute BNB flux RW weight, or LEE weight (if in LEE mode)
+        double GetWeight(const ParticleGraph mc_graph);
+
+        /// Function to compute various neutrino energy definitions and fill them
+        void FillRecoNuEnergies(const Particle &nue, const ParticleGraph &ps, const EventData &data);
+
         // Result tree comparison for reconstructed events
         TTree* _result_tree;
         std::string _treename;
 
-        float _eCut;
-
         double _e_nuReco;         /// Neutrino energy
         double _e_dep;            /// Neutrino energy
         double _weight;
-        int _numEvts;
-        bool _is_fiducial;
         int _parentPDG;           /// true PDG of parent of the electron (only for running on MC)
         int _ptype;               /// neutrino ptype to further break down nue slice in stacked histo
         int _mcPDG;               /// true PDG of "single electron" (probably 11 or 22)

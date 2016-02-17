@@ -93,7 +93,7 @@ for key, filename in filenames.iteritems():
     dfs.update( { key : pd.DataFrame( root2array( filebase + filename, treenames[key] ) ) } )
 
 # Uncomment this if you want to see what variables are stored in the dataframes
-# dfs['cosmic'].info()
+dfs['cosmic'].info()
 
 # This function makes a weighted numpy histogram from the dataframes
 # You give it a "query" (analysis cut), the variable you want to have
@@ -110,6 +110,8 @@ def gen_histos( binning = np.linspace(0,10,1), myquery='', plotvar = default_plo
         # scaling to beam gate open exposure time) this will
 	    # change.
         if key == 'cosmic':
+            print mydf[default_plot_variable].shape[0]
+
             myweights = np.ones(mydf[default_plot_variable].shape[0])
         else:
             myweights = np.array(mydf['_weight'])
@@ -130,7 +132,7 @@ def plot_fullstack( binning = np.linspace(0,10,1), myquery='', plotvar = default
     lasthist = 0
     myhistos = gen_histos(binning=binning,myquery=myquery,plotvar=plotvar,scalefactor=scalefactor)
     for key, (hist, bins) in myhistos.iteritems():
-      if key == 'cosmic': continue
+      #if key == 'cosmic': continue
       plt.bar(bins[:-1],hist,
               width=bins[1]-bins[0],
               color=colors[key],

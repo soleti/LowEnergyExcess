@@ -43,7 +43,7 @@ lee_ana.SetTreeName("LEETree")
 lee_ana.SetLEESampleMode(True)
 
 
-anaunit = GetERSelectionInstance()
+anaunit = GetERSelectionInstance(flash=False)
 anaunit._mgr.ClearCfgFile()
 anaunit._mgr.AddCfgFile(os.environ['LARLITE_USERDEVDIR']+'/SelectionTool/ERTool/dat/ertool_default%s.cfg'%('_reco' if use_reco else ''))
 

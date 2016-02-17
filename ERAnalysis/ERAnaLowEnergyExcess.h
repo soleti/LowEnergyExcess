@@ -65,6 +65,11 @@ namespace ertool {
         /// setting result tree name for running the LowEExcess plotting code
         void SetTreeName(const std::string& name) { _treename = name; }
 
+        /// set the energy cut to be used when counting particles
+        void SetECut(double c) { _eCut = c; }
+
+        // geoalgo::AABox TPC;
+
         //Set this to true if you're running over LEE sample (so it uses LEE reweighting package)
         void SetLEESampleMode(bool flag) { _LEESample_mode = flag; }
 
@@ -76,30 +81,34 @@ namespace ertool {
         // Determine if the event is "simple" (1e, np, 0else)
         bool isInteractionSimple(const Particle &singleE, const ParticleGraph &ps);
 
-        /// Function to compute BITE relevant variables (in ttree) and fill them
-        void FillBITEVariables(const Shower &singleE_shower, const Particle &p);
-
-        /// Function to compute BNB flux RW weight, or LEE weight (if in LEE mode)
-        double GetWeight(const ParticleGraph mc_graph);
-
-        /// Function to compute various neutrino energy definitions and fill them
-        void FillRecoNuEnergies(const Particle &nue, const ParticleGraph &ps, const EventData &data);
-
         // Result tree comparison for reconstructed events
         TTree* _result_tree;
         std::string _treename;
 
+        float _eCut;
+
         double _e_nuReco;         /// Neutrino energy
         double _e_dep;            /// Neutrino energy
         double _weight;
+        int _numEvts;
+        bool _is_fiducial;
+        double _ancestor_e;
+        int _ancestorPDG;           /// true PDG of parent of the electron (only for running on MC)
+        double _parent_e;
         int _parentPDG;           /// true PDG of parent of the electron (only for running on MC)
-        int _ptype;               /// neutrino ptype to further break down nue slice in stacked histo
         int _mcPDG;               /// true PDG of "single electron" (probably 11 or 22)
         int _mcGeneration;        /// True generation of single electron (to characterize cosmics and other backgrounds)
         double _longestTrackLen;  /// longest track associated with the reconstructed neutrino
         double _x_vtx;            /// Neutrino vertex points (x,y,z separated)
         double _y_vtx;
         double _z_vtx;
+        double _start_x;            /// Neutrino vertex points (x,y,z separated)
+        double _start_y;            /// Neutrino vertex points (x,y,z separated)
+        double _start_z;            /// Neutrino vertex points (x,y,z separated)
+        double _end_x;            /// Neutrino vertex points (x,y,z separated)
+        double _end_y;            /// Neutrino vertex points (x,y,z separated)
+        double _end_z;            /// Neutrino vertex points (x,y,z separated)
+
         double _e_theta;          /// Electron's angle w.r.t/ z- axis
         double _e_phi;            /// Electron's phi angle
         double _e_Edep;           /// Electron's truth energy
@@ -112,13 +121,12 @@ namespace ertool {
         double _dedx;             /// dedx of "single electron" shower
         double _flash_time;       /// opflash associated with electron... flash time
         double _summed_flash_PE;  /// total reconstructed PE of the flash
-        bool _maybe_pi0_MID;      /// whether the neutrino has a gamma tagged as one of its children
-        int _n_ertool_showers;    /// total number of ertool::Showers in the event
-        int _n_nues_in_evt;       /// # of nues reconstructed in the entire event (pi0 evts sometimes have two  )
-        bool _has_muon_child;     /// If there is a muon associated with the reconstructed nue
-        double _e_nuReco_better;    /// trying a better definition of energy
-
-
+        bool _maybe_pi0_MID;    /// whether the neutrino has a gamma tagged as one of its children
+        bool _in_tagger;
+        bool _in_tagger_phaseA;
+        
+        bool _in_ob;
+        
         // prepare TTree with variables
         void PrepareTreeVariables();
         /// Function to re-set TTree variables
@@ -135,13 +143,24 @@ namespace ertool {
         double _dist_2wall ;      /// Electron backwards distance 2 wall
         double _dist_2wall_vtx;   /// Vertex backwards distance 2 wall
         ::geoalgo::AABox _vactive;
-
+        ::geoalgo::AABox _tagger_top_1;
+        ::geoalgo::AABox _tagger_top_2;
+        ::geoalgo::AABox _tagger_under;
+        ::geoalgo::AABox _tagger_pipe_1;
+        ::geoalgo::AABox _tagger_pipe_2;
+        ::geoalgo::AABox _tagger_ft;
     protected:
-
+        bool Intersect(const ::geoalgo::HalfLine_t&);
+        bool IntersectDumb(const TVector3& start, const TVector3& end);
+        bool IntersectDumbPhaseA(const TVector3& start, const TVector3& end);
+        
+        bool OBIntersect(const TVector3& start, const TVector3& end);
+        
         ::lee::LEERW _rw;
         ::geoalgo::GeoAlgo _geoalg;
         ::lee::util::ECCQECalculator _eccqecalc;
 
+        
     };
 }
 #endif

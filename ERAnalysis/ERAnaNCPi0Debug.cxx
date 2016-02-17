@@ -89,10 +89,10 @@ namespace ertool {
                     << "Parent is 111, singleE dep energy is " << _e_Edep << std::endl;
           event_of_interest = true;
 
-          std::cout << "Here's the MC Particlegraph diagram" << std::endl;
-          std::cout << mc_graph.Diagram() << std::endl;
-          std::cout << "Here's the Reco Particlegraph diagram" << std::endl;
-          std::cout << graph.Diagram() << std::endl;
+          // std::cout << "Here's the MC Particlegraph diagram" << std::endl;
+          // std::cout << mc_graph.Diagram() << std::endl;
+          // std::cout << "Here's the Reco Particlegraph diagram" << std::endl;
+          // std::cout << graph.Diagram() << std::endl;
 
         }//end if parent pdg is 111 and electron deposits > 50 MEV
       }//end if recotype == shower
@@ -102,27 +102,26 @@ namespace ertool {
 
     //Get everything associated with the same flash as the shower, and
     //add up hadronic energy (considering protons and pions for now)
-    // double Wtotal = 0.;
-    // if (singleE_flashID != 99999) {
-    //   for ( auto const & t : data.Track() ) {
-    //     FlashID_t i_flashID = 99998;
-    //     auto p = graph.GetParticle(graph.NodeID(t));
-    //     try {i_flashID = data.Flash(graph.GetParticle(p.Ancestor())).FlashID();}
-    //     catch ( ERException &e ) {}
-    //     if (i_flashID == singleE_flashID) {
-    //       std::cout<<"Found something that shares the flash! PDG = "<<p.PdgCode()<<std::endl;
-    //       //found something that shares the flash
-    //       // add up hadronic energy (from protons, pions)
-    //       if (p.PdgCode() == 2212 || p.PdgCode() == 211 ) {
-    //         Wtotal += t._energy;
-    //       }
-    //     } // End if you found something that shares the flash
+    double Wtotal = 0.;
+    if (singleE_flashID != 99999) {
+      for ( auto const & t : data.Track() ) {
+        FlashID_t i_flashID = 99998;
+        auto p = graph.GetParticle(graph.NodeID(t));
+        try {i_flashID = data.Flash(graph.GetParticle(p.Ancestor())).FlashID();}
+        catch ( ERException &e ) {}
+        if (i_flashID == singleE_flashID) {
+          std::cout<<"Found something that shares the flash! PDG = "<<p.PdgCode()<<std::endl;
+          //found something that shares the flash
+          // add up hadronic energy (from protons, pions)
+          if (p.PdgCode() == 2212 || p.PdgCode() == 211 ) {
+            Wtotal += t._energy;
+          }
+        } // End if you found something that shares the flash
 
-    //   } // end loop over particles to add up the hadronic energy
-    // }//end if singleE_flashID != 99999
+      } // end loop over particles to add up the hadronic energy
+    }//end if singleE_flashID != 99999
 
-    // std::cout << " and Wtotal is " << Wtotal << std::endl;
-    
+    std::cout << " and Wtotal is " << Wtotal << std::endl;
     ///Compute distance to closest track start
     _dist_to_closest_track_start = 999999.;
     for (auto const& t : graph.GetParticleNodes(RecoType_t::kTrack)) {

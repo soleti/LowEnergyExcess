@@ -7,13 +7,6 @@ if len(sys.argv) < 2:
     sys.stderr.write(msg)
     sys.exit(1)
 
-if sys.argv[1] not in ['reco','mc']:
-	msg = '\n'
-	msg += 'Specify if you want to use "reco" or "mc" quantities in your first argument to this script!'
-	msg += '\n'
-	sys.stderr.write(msg)
-	sys.exit(1)
-
 from ROOT import gSystem
 from ROOT import larlite as fmwk
 from ROOT import ertool
@@ -23,30 +16,43 @@ from singleE_config import GetERSelectionInstance
 my_proc = fmwk.ana_processor()
 my_proc.enable_filter(True)
 
-use_reco = True if sys.argv[1] == 'reco' else False
+emulator_cfg = ''
 
-# Set input root file
-for x in xrange(len(sys.argv)-3):
-    my_proc.add_input_file(sys.argv[x+2])
+#Parse the config file
+with open(sys.argv[1]) as f:
+    content = f.readlines()
+newcontent = [x.strip('\n') for x in content]
+use_reco = True if newcontent[0] == 'reco' else False
+if use_reco:
+    emulator_cfg = newcontent[1]
+    newcontent.pop(1)
+
+# Set input root files
+for infile in newcontent[1:-1]:
+    my_proc.add_input_file(infile)
 
 # Specify IO mode
 my_proc.set_io_mode(fmwk.storage_manager.kBOTH)
 
-
 # Specify output root file name
-outfilebase = sys.argv[-1]+'/'+sys.argv[0][:-3]+'_%s'%('mc' if not use_reco else 'reco')
-outfile = outfilebase+'.root'
+outfile = newcontent[-1]
 print "%s output file = %s"%(sys.argv[0],outfile)
 my_proc.set_ana_output_file(outfile)
-my_proc.set_output_file(outfilebase+'_larlite_out.root')
+my_proc.set_output_file(outfile[:-5]+'_larlite_out.root')
 
-#BITE filter
-eventfilter = fmwk.MC_dirt_Filter()
+#nueCC beam
+eventfilter = fmwk.MC_LEE_Filter()
 
 LEEana = ertool.ERAnaLowEnergyExcess()
-LEEana.SetTreeName("dirt")
-#LEEana.SetDebug(False)
-# LEEana.SetECut(Ecut)
+LEEana.SetTreeName("LEETree")
+LEEana.SetLEESampleMode(True)
+LEEana.SetLEENEvents(5933)#for 35880 intrinsic nues
+LEEana.SetLEEFilename(os.environ['LARLITE_USERDEVDIR']+'/LowEnergyExcess/LEEReweight/source/LEE_Reweight_plots.root')
+#Currently using the mcc6 input histogram even though it's not quite right,
+#because I can't get the mcc7 input histogram to work correctly with these low statistics
+LEEana.SetLEECorrHistName('initial_evis_uz_corr')
+#LEEana.SetLEECorrHistName('temp_mcc7_lowstat')
+
 
 anaunit = GetERSelectionInstance()
 anaunit._mgr.ClearCfgFile()
@@ -54,7 +60,8 @@ if not use_reco:
 	anaunit._mgr.AddCfgFile(os.environ['LARLITE_USERDEVDIR']+'/SelectionTool/ERTool/dat/ertool_default.cfg')
 else:
 	anaunit._mgr.AddCfgFile(os.environ['LARLITE_USERDEVDIR']+'/SelectionTool/ERTool/dat/ertool_default_emulated.cfg')
-	
+
+
 if use_reco:
 	anaunit.SetShowerProducer(False,'recoemu')
 	anaunit.SetTrackProducer(False,'recoemu')
@@ -64,10 +71,17 @@ anaunit._mgr.AddAna(LEEana)
 # to the process to be run
 
 my_proc.add_process(eventfilter)
+
+if use_reco:
+    emulator = fmwk.EmuDriver()
+    emulator.set_config(emulator_cfg)
+    print "USING RECO EMULATOR. CONFIG FILE USED FOR EMULATOR IS %s"%emulator_cfg
+    my_proc.add_process(emulator)
+
 my_proc.add_process(anaunit)
 
 my_proc.run()
-# my_proc.run(0,500)
+# my_proc.run(0,4900) #something breaks between 4900 and 5000 ..
 
 # done!
 print

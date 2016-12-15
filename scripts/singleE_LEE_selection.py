@@ -2,7 +2,7 @@ import sys, os
 
 if len(sys.argv) < 2:
     msg  = '\n'
-    msg += "Usage 1: %s $INPUT_ROOT_FILEs $OUTPUT_PATH\n" % sys.argv[0]
+    msg += "Usage 1: %s \'mc\'/\'reco\' $INPUT_ROOT_FILEs $OUTPUT_PATH\n" % sys.argv[0]
     msg += '\n'
     sys.stderr.write(msg)
     sys.exit(1)
@@ -30,33 +30,50 @@ for x in xrange(len(sys.argv)-3):
     my_proc.add_input_file(sys.argv[x+2])
 
 # Specify IO mode
-my_proc.set_io_mode(fmwk.storage_manager.kREAD)
+my_proc.set_io_mode(fmwk.storage_manager.kBOTH)
 
 # Specify output root file name
-outfile = sys.argv[-1]+'/'+sys.argv[0][:-3]+'_%s'%('mc' if not use_reco else 'reco')+'.root'
-
+outfilebase = sys.argv[-1]+'/'+sys.argv[0][:-3]+'_%s'%('mc' if not use_reco else 'reco')
+outfile = outfilebase+'.root'
+print "%s output file = %s"%(sys.argv[0],outfile)
 my_proc.set_ana_output_file(outfile)
+my_proc.set_output_file(outfilebase+'_larlite_out.root')
 
-lee_ana = ertool.ERAnaLowEnergyExcess()
-lee_ana.SetTreeName("LEETree")
-#lee_ana.SetDebug(False)
-lee_ana.SetLEESampleMode(True)
+#nueCC beam
+eventfilter = fmwk.MC_LEE_Filter()
+
+LEEana = ertool.ERAnaLowEnergyExcess()
+LEEana.SetTreeName("LEETree")
+LEEana.SetLEESampleMode(True)
+LEEana.SetLEENEvents(7366)#427 # for current filter, with 1000 bnb intrinsic total events #7366
+LEEana.SetLEEFilename(os.environ['LARLITE_USERDEVDIR']+'/LowEnergyExcess/LEEReweight/source/LEE_Reweight_plots.root')
+#Currently using the mcc6 input histogram even though it's not quite right,
+#because I can't get the mcc7 input histogram to work correctly with these low statistics
+LEEana.SetLEECorrHistName('initial_evis_uz_corr')
+#LEEana.SetLEECorrHistName('temp_mcc7_lowstat')
 
 
-anaunit = GetERSelectionInstance(flash=False)
+anaunit = GetERSelectionInstance()
 anaunit._mgr.ClearCfgFile()
-anaunit._mgr.AddCfgFile(os.environ['LARLITE_USERDEVDIR']+'/SelectionTool/ERTool/dat/ertool_default%s.cfg'%('_reco' if use_reco else ''))
+if not use_reco:
+	anaunit._mgr.AddCfgFile(os.environ['LARLITE_USERDEVDIR']+'/SelectionTool/ERTool/dat/ertool_default.cfg')
+else:
+	anaunit._mgr.AddCfgFile(os.environ['LARLITE_USERDEVDIR']+'/SelectionTool/ERTool/dat/ertool_default_emulated.cfg')
+
 
 if use_reco:
-    anaunit.SetShowerProducer(False,'showerrecofuzzy')
-    anaunit.SetTrackProducer(False,'stitchkalmanhitcc')
+	anaunit.SetShowerProducer(False,'recoemu')
+	anaunit.SetTrackProducer(False,'recoemu')
 
+anaunit._mgr.AddAna(LEEana)
+# Add MC filter and analysis unit
+# to the process to be run
 
-anaunit._mgr.AddAna(lee_ana)
+my_proc.add_process(eventfilter)
 my_proc.add_process(anaunit)
 
 my_proc.run()
-# my_proc.run(0,500)
+# my_proc.run(0,4900) #something breaks between 4900 and 5000 ..
 
 # done!
 print

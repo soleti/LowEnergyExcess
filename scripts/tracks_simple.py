@@ -3,7 +3,7 @@ from ROOT import TGeoVolume, TBRIK,TPad, TView, gStyle, gDirectory, TFile, TH1F,
 from array import array
 import math
 
-filebase = os.environ['LARLITE_USERDEVDIR']+'/LowEnergyExcess/output/bite_tagged.root'
+filebase = os.environ['LARLITE_USERDEVDIR']+'/LowEnergyExcess/output/singleE_cosmic_selection_mc.root'
 
 c1 = TCanvas("c1")
 p1 = TPad("p1","p1",0.05,0.05,0.95,0.95)
@@ -16,33 +16,22 @@ lines = []
 
 f = TFile(filebase)
 
-chain = gDirectory.Get("dirt")
+chain = gDirectory.Get("cosmicShowers")
 entries = chain.GetEntriesFast()
 
 
-for entry in range(entries):
+for entry in xrange(entries):
     ientry = chain.LoadTree(entry)
     nb = chain.GetEntry(entry)
     
-    default_cut = chain._e_Edep > 50.
-    tracklen_cut = chain._longestTrackLen < 100.
-    fidvolcut = chain._x_vtx > 10 and chain._x_vtx < 246.35 and chain._y_vtx > -106.5 and chain._y_vtx < 106.5 and chain._z_vtx > 10 and chain._z_vtx < 1026.8;
-    nu_cut = chain._e_nuReco > 100
+    start = [chain._start_x,chain._start_y,chain._start_z]
+    end = [chain._end_x,chain._end_y,chain._end_z]
+    direction = [a_i - b_i for a_i, b_i in zip(end, start)]
+    polyline = TPolyLine3D(2)
+    polyline.SetPoint(0, start[0], start[1], start[2])
+    polyline.SetPoint(1, start[0]-10*direction[0], start[1]-10*direction[1], start[2]-10*direction[2])
 
-    if default_cut and nu_cut:
-        #print chain._start_x, chain._start_y,chain._start_z
-        #print chain._end_x,chain._end_y,chain._end_z
-        start = [chain._start_x,chain._start_y,chain._start_z]
-        end = [chain._end_x,chain._end_y,chain._end_z]
-        direction = [a_i - b_i for a_i, b_i in zip(end, start)]
-        polyline = TPolyLine3D(2)
-        polyline.SetPoint(0, start[0], start[1], start[2])
-        polyline.SetPoint(1, start[0]-10*direction[0], start[1]-10*direction[1], start[2]-10*direction[2])
-        
-        if chain._parentPDG == 22:
-            polyline.SetLineStyle(2)
-        
-        lines.append(polyline)
+    lines.append(polyline)
             
     
 for line in lines:
@@ -132,4 +121,4 @@ Under.Draw()
 Pipe.Draw()
 FT.Draw()
 c1.Update()
-input()
+raw_input()

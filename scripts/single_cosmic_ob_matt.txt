@@ -1,0 +1,4 @@
+mc
+/Users/soleti/data/matt_cosmic_ob/CRT_3ftOB_00499_larlite_mcinfo.root
+/Users/soleti/data/matt_cosmic_ob/CRT_3ftOB_00499_larlite_opreco.root
+/Users/soleti/larlite/UserDev/LowEnergyExcess/output/single_cosmic_ob/crt_497.root

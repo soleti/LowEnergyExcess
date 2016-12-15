@@ -1,0 +1,4 @@
+mc
+/Users/soleti/data/matt_bnb/CRT_00499_bnbonly_larlite_mcinfo.root
+/Users/soleti/data/matt_bnb/CRT_00499_bnbonly_larlite_opreco.root
+/Users/soleti/larlite/UserDev/LowEnergyExcess/output/single_bnb/crt_498.root

@@ -34,66 +34,113 @@ from collections import OrderedDict
 ##  These are some sample analysis cuts one may want to apply
 ##  Look at how these are formatted and used if you want to apply your own
 #10cm from all sides
-defaultcut = '_e_Edep > 50.'
-fidvolcut = '_x_vtx > 10 and _x_vtx < 246.35 and _y_vtx > -106.5 and _y_vtx < 106.5 and _z_vtx > 10 and _z_vtx < 1026.8'
-tracklencut = '_longestTrackLen < 100.'
-BGWcut = '_flash_time > 0. and _flash_time < 0.2'
+defaultcut = '_e_Edep > 60.'
+fidxmin, fidxmax = 10., 246.
+fidymin, fidymax = -106.5, 86.5
+fidzmin, fidzmax = 10., 1026.8
+fidvolcut = '_y_vtx > %f and _y_vtx < %f '%(fidymin, fidymax)
+fidvolcut += 'and _z_vtx > %f and _z_vtx < %f'%(fidzmin, fidzmax)
+fidvolcut += ' and _x_vtx > %f and _x_vtx < %f'%(fidxmin, fidxmax)
+BGWstart = 3.6
+BGWend   = 5.2
+BGWcut = '_flash_time > %f and _flash_time < %f'%(BGWstart,BGWend)
 #####################################################################
 
 # Default x-axis variable for stacked histograms
-default_plot_variable = '_e_nuReco'
+default_plot_variable = '_e_nuReco_better'
 
 # Where the output files live that contain ttrees to plot from
-filebase = os.environ['LARLITE_USERDEVDIR']+'/LowEnergyExcess/output/'
+#filebase = os.environ['LARLITE_USERDEVDIR']+'/LowEnergyExcess/output/'
+filebase = '/Users/soleti/larlite/UserDev/LowEnergyExcess/output/'
+
+# Whether you use perfect reco input or reco emulated input
+mc_or_reco = 'mc'
+
+# These are the file names that were output by your run script
+# You generally delete the *_larlite_out.root output files that pop out
+# If you only run on one or a few of these, comment out the lines
+# below that you do not run over
+# As an example, I have commented out the "cosmicoutoftime"
+# sample.
 filenames = OrderedDict([
-	                     ('nue','singleE_nue_selection_mc.root'),
-                         ('numu','singleE_numu_selection_mc.root'),
-                         ('nc','singleE_nc_selection_mc.root'),
-                         ('cosmic','singleE_cosmic_selection_mc.root'),
-                         ('lee','singleE_LEE_selection_mc.root')
-                        ])
+('nue','singleE_nue_selection_mc.root'),
+('numu','singleE_numu_selection_mc.root'),
+('nc','singleE_nc_selection_mc.root'),
+('bite','singleE_dirt_selection_%s.root'%(mc_or_reco)),
+('cosmic','tagger.root'),
+#('cosmicoutoftime','cosmic_out.root'),
+('lee','singleE_LEE_selection_mc.root')
+])
 
-treenames = { 
-	      'nue' : 'beamNuE',
-          'cosmic' : 'cosmicShowers',
-          'numu' : 'beamNuMu',
-          'nc' : 'beamNC',
-          'lee' : 'LEETree'
-          }
 
-labels = { 
-	      'nue' : 'Beam Intrinsic Nue',
-          'cosmic' : 'CRY Cosmic (Scaled to BGW Exposure Time)',#'CRY Cosmic, in-time',
-          'numu' : 'Beam Intrinsic Numu',
-          'nc' : 'Beam Intrinsic NC', 
-          'lee' : 'Scaled Low Energy Excess'
-          }
+# These weights are to scale to 6.6e20 POT
+# You may need to change the number of events generated
+# (how many events you ran over BEFORE any event filtering)
+# Keep the 'lee' weight at 1, but in the singleE_lee_selection
+# script, there you will need to input the number of events
+# you run over (AFTER the event filtering).
+# You may need to run over the lee sample once just to see
+# what number to put into that run script.
+scaling_weights = { 
+'nue' : 6.6e20/(3.1845e17*19920),
+ #(211,000 ms total exposure)/(7.2ms * 36600 evts generated)
+  'cosmic' : 211000/(7.25*5346), 
+  #'cosmic' : (1.056e6)/(36600),
+  'numu' : 6.6e20/((1.203e15)*20240),
+  'nc' : 6.6e20/(1.203e15*20240),
+  'bite' : 6.6e20/(1.203e15*20240),
+  'cosmicoutoftime': 6.6e20/(1.203e15*9960),
+  'lee' : 1 
+}
 
-colors = { 
-	      'nue' : '#269729', #kGreen-2
-          'numu' : '#4B4EAC', #kBlue-5
+
+treenames = { 'nue' : 'beamNuE',
+             'cosmic' : 'cosmicShowers',
+             'cosmicoutoftime':'cosmicOutOfTime',
+             'numu' : 'beamNuMu',
+             'nc' : 'beamNC',
+             'bite': 'dirt',
+            'lee' : 'LEETree'}
+
+labels = { 'nue' : 'Beam Intrinsic $\\nu_e$',
+          'cosmicoutoftime':'Cosmic Out Of Time, Nu In Time',
+         'cosmic' : 'Corsika Cosmics In Time (BGW Exposure Scaled)',#'CRY Cosmic, in-time',
+         'numu' : 'Beam Intrinsic $\\nu_\mu$',
+         'nc' : 'Beam Intrinsic NC', 
+          'bite': 'B.I.T.E. (In Cryostat)',
+         'lee' : 'Scaled Signal'}
+
+colors = { 'nue' : '#269729', #kGreen-2
+         'numu' : '#4B4EAC', #kBlue-5
           'nc' : '#6B70F5', #kBlue-9
           'cosmic' : '#D12C2C', #kRed-3
+          'cosmicoutoftime' : '#F700FF', #temporary pink
+          'bite' : '#9F9F9F', #grayish?
           'lee' : '#E65C00' #orangish
           }
 
-#These weights are to scale to 6.6e20 POT
-scaling_weights = { 
-	         'nue' : 6.6e20/(2.706e15*99600), #99600 is # of total BNB events looped over
-             'cosmic' : 2.52, #(211,000 ms total exposure)/(6.4ms * 13100 evts generated) 
-             #(this cosmic weight for if NOT using flash matching)
-             'numu' : 6.6e20/(2.706e15*99600),
-             'nc' : 6.6e20/(2.706e15*99600),
-             'lee' : 1 #LEE weights to scale to 6.6e20 are fully contained in the output tree
-                  }
+
 
 # Read in all the ttrees to pandas dataframes
 dfs = OrderedDict()
 for key, filename in filenames.iteritems():
     dfs.update( { key : pd.DataFrame( root2array( filebase + filename, treenames[key] ) ) } )
 
+if 'cosmicoutoftime' in dfs.keys():
+  #throw away intime cosmics from outoftime sample
+  dfs['cosmicoutoftime']=dfs['cosmicoutoftime'].query('_mc_time<3100 or _mc_time>4700')
+  #enforce the out of time cosmics truly come from cosmics
+  dfs['cosmicoutoftime']=dfs['cosmicoutoftime'].query('_mc_origin == 2')
+
+#Hack the open cosmics so they all flash in the middle of the BGW
+#(this is how we scale cosmics to total BGW exposure time..
+# this way we can just apply the same flashmatch cut and not have
+# to do any other gymnastics specific to this one sample)
+if 'cosmic' in dfs.keys():
+  dfs['cosmic']['_flash_time'] = ((BGWstart+BGWend)/2.)
+
 # Uncomment this if you want to see what variables are stored in the dataframes
-dfs['cosmic'].info()
+#dfs['cosmic'].info()
 
 # This function makes a weighted numpy histogram from the dataframes
 # You give it a "query" (analysis cut), the variable you want to have
@@ -104,21 +151,19 @@ def gen_histos( binning = np.linspace(0,10,1), myquery='', plotvar = default_plo
     nphistos = OrderedDict()
 
     for key, df in dfs.iteritems():
-        mydf = df.query(myquery) if myquery else df
-        # Cosmic weights are applied slightly differently
-        # Once we switch to full flash-matching (and not just
-        # scaling to beam gate open exposure time) this will
+      mydf = df.query(myquery) if myquery else df
+      # Cosmic weights are applied slightly differently
+      # Once we switch to full flash-matching (and not just
+      # scaling to beam gate open exposure time) this will
 	    # change.
-        if key == 'cosmic':
-            print mydf[default_plot_variable].shape[0]
-
-            myweights = np.ones(mydf[default_plot_variable].shape[0])
-        else:
-            myweights = np.array(mydf['_weight'])
-        myweights *= scaling_weights[key]
-        nphistos.update( {key : np.histogram(mydf[plotvar]/scalefactor,
-                                     bins=binning,
-                                     weights=myweights)} )
+      if key == 'cosmic':
+          myweights = np.ones(mydf[default_plot_variable].shape[0])
+      else:
+          myweights = np.array(mydf['_weight'])
+      myweights *= scaling_weights[key]
+      nphistos.update( {key : np.histogram(mydf[plotvar]/scalefactor,
+                                   bins=binning,
+                                   weights=myweights)} )
     return nphistos
 
 # This function loops over the dataframes and makes the 
@@ -132,7 +177,7 @@ def plot_fullstack( binning = np.linspace(0,10,1), myquery='', plotvar = default
     lasthist = 0
     myhistos = gen_histos(binning=binning,myquery=myquery,plotvar=plotvar,scalefactor=scalefactor)
     for key, (hist, bins) in myhistos.iteritems():
-      #if key == 'cosmic': continue
+
       plt.bar(bins[:-1],hist,
               width=bins[1]-bins[0],
               color=colors[key],
@@ -144,7 +189,7 @@ def plot_fullstack( binning = np.linspace(0,10,1), myquery='', plotvar = default
 
     plt.title('CCSingleE Stacked Backgrounds',fontsize=25)
     plt.ylabel('Events',fontsize=20)
-    if plotvar == '_e_nuReco':
+    if plotvar == '_e_nuReco' or plotvar == '_e_nuReco_better':
         xstring = 'Reconstructed Neutrino Energy [GeV]' 
     elif plotvar == '_e_CCQE':
         xstring = 'CCQE Energy [GeV]'
@@ -157,8 +202,11 @@ def plot_fullstack( binning = np.linspace(0,10,1), myquery='', plotvar = default
     #plt.ylim([0,130])
 
 if __name__ == '__main__':
-  mybins = np.linspace(0.1,3.0,15)
-  plot_fullstack(binning=mybins, myquery=defaultcut+' and '+tracklencut, \
+  mybins = np.linspace(0.1,3.0,29)
+  mycuts = defaultcut + ' and ' + BGWcut# + ' and ' + fidvolcut
+  print "The cuts used to make the plot you're seeing are: "
+  print mycuts
+  plot_fullstack(binning=mybins, myquery=mycuts, \
     plotvar='_e_nuReco', scalefactor=1000.)
   plt.show()
 
